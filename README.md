@@ -15,7 +15,7 @@ DeepSeek Harness 安全模式 / 修理终端。
 
 桌面已创建两个入口：
 
-- **DeepSeek Harness Safe Mode**：进入安全终端（全屏 TUI，仿 OpenCode / Claude Code 风格）。
+- **DeepSeek Harness Safe Mode**：进入安全终端（现代化全屏 TUI）。
 - **DeepSeek Harness Repair**：只运行修复脚本，不需要 DSH 启动。
 
 也可以手动运行：
