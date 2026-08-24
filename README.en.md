@@ -1,12 +1,12 @@
-# dsh-safe-console
+# dsh-safe-tui
 
-A safe-mode recovery console for DeepSeek Harness.
+A safe-mode recovery TUI for DeepSeek Harness.
 
 ## What it is
 
 When the main Web UI cannot start because of a broken plugin/client patch, use this standalone terminal to:
 
-- Load only `dsh-base` + `dsh-safe-console`; no user plugins, no Web UI.
+- Load only `dsh-base` + `dsh-safe-tui`; no user plugins, no Web UI.
 - Disable user-authored presets (`includeUserRoot: false`); only `minimal` / `standard` are exposed.
 - Inherit existing DeepSeek history from `~/.dsh/sessions` (`/list` + `/resume <id>`).
 - Repair corrupted official client files from bundled pristine copies (`/repair` or the standalone Repair shortcut).
@@ -16,7 +16,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-console#v0.1.0
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.1.0
 ```
 
 Then either:
@@ -73,7 +73,7 @@ dsh --profile safe --repair                  # repair broken files
 
 ## Repository
 
-<https://github.com/aorucshiea/dsh-safe-console>
+<https://github.com/aorucshiea/dsh-safe-tui>
 
 ## License
 

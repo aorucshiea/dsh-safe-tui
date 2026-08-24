@@ -1,4 +1,4 @@
-# 发布 dsh-safe-console 到 DeepSeek Harness 插件市场
+# 发布 dsh-safe-tui 到 DeepSeek Harness 插件市场
 
 ## 1. DSH 插件安装机制（已确认）
 
@@ -15,9 +15,9 @@
 - 用户安装：
 
 ```bash
-dsh plugin --profile web add github:<owner>/dsh-safe-console
+dsh plugin --profile web add github:<owner>/dsh-safe-tui
 # 或如果发到 npm：
-dsh plugin --profile web add @scope/dsh-safe-console
+dsh plugin --profile web add @scope/dsh-safe-tui
 ```
 
 - `dsh plugin` 会：
@@ -28,7 +28,7 @@ dsh plugin --profile web add @scope/dsh-safe-console
 
 - 本仓库已经是合法 bundle：
   - `package.json` 有 `dsh.bundle.patch`
-  - 有 `cordis.patch.yml`，且 bundle 内自带 `agent-presets` + `safe-console`
+  - 有 `cordis.patch.yml`，且 bundle 内自带 `agent-presets` + `safe-tui`
   - 纯 JS、无 `prepare`/`postinstall` 安装脚本
   - 市场扫描器会判定为“可安全安装”的格式
 
@@ -54,14 +54,14 @@ dsh plugin --profile web add @scope/dsh-safe-console
 已完成：
 
 ```text
-https://github.com/aorucshiea/dsh-safe-console
+https://github.com/aorucshiea/dsh-safe-tui
 分支：main
 ```
 
 如果以后要重新推送：
 
 ```bash
-cd dsh-safe-console
+cd dsh-safe-tui
 git push -u origin main
 ```
 
@@ -87,7 +87,7 @@ git push -u origin main
 
 ### 3.5 可选：发布到 npm
 
-如果想要 `dsh plugin add @scope/dsh-safe-console` 这种方式：
+如果想要 `dsh plugin add @scope/dsh-safe-tui` 这种方式：
 
 ```bash
 npm login
@@ -97,14 +97,14 @@ npm publish --access public
 发布后，用户也可以：
 
 ```bash
-dsh plugin --profile web add @scope/dsh-safe-console
+dsh plugin --profile web add @scope/dsh-safe-tui
 ```
 
 ## 4. 建议的安装说明（已写进 README）
 
 ```bash
 # GitHub 安装（推荐，可固定 Release）
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-console#v0.1.0
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.1.0
 ```
 
 重启后打开：
@@ -124,7 +124,7 @@ deepseek
 已完成：
 
 - GitHub CLI 安装并登录
-- 公开仓库创建：https://github.com/aorucshiea/dsh-safe-console
+- 公开仓库创建：https://github.com/aorucshiea/dsh-safe-tui
 - 推送到 `main`
 - 添加 topics：`dsh-plugin`、`deepseek-harness`、`dsh`、`deepseek`
 - 创建 Release：v0.1.0

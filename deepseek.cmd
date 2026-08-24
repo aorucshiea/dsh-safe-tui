@@ -1,5 +1,5 @@
 @echo off
-rem deepseek - quick entry to dsh-safe-console TUI.
+rem deepseek - quick entry to dsh-safe-tui TUI.
 rem Optional: copy this file to a directory on PATH (e.g. %APPDATA%\npm).
 setlocal
 chcp 65001 >nul

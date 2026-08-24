@@ -1,4 +1,4 @@
-# dsh-safe-console
+# dsh-safe-tui
 
 [English](README.en.md)
 
@@ -30,7 +30,7 @@ dsh --profile safe --list
 dsh --profile safe --resume <sessionId>
 dsh --profile safe --check
 dsh --profile safe --repair
-node "%USERPROFILE%\dsh-safe-console\lib\repair.js" --repair
+node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 ```
 
 安全终端内命令：
@@ -41,11 +41,11 @@ node "%USERPROFILE%\dsh-safe-console\lib\repair.js" --repair
 
 ## 从插件市场 / GitHub 安装
 
-插件本身是自包含的 DSH bundle，包含 `agent-presets` + `safe-console`，无需手动建 profile：
+插件本身是自包含的 DSH bundle，包含 `agent-presets` + `safe-tui`，无需手动建 profile：
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-console#v0.1.0
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.1.0
 ```
 
 之后可以直接运行：
@@ -62,12 +62,12 @@ deepseek
 
 `deepseek` 会直接打开同一个全屏 TUI。
 
-仓库：<https://github.com/aorucshiea/dsh-safe-console>
+仓库：<https://github.com/aorucshiea/dsh-safe-tui>
 
 ## 关键文件
 
-- `cordis.patch.yml` — bundle 补丁，挂载 `safe-console` 插件。
+- `cordis.patch.yml` — bundle 补丁，挂载 `safe-tui` 插件。
 - `lib/index.js` — 交互式/一次性安全终端插件。
 - `lib/repair.js` — 无需 DSH 即可独立运行的修复脚本。
 - `pristine/` — 从官方 `0.1.0-rc.6` 提取的原始文件，用于恢复。
-- `~/.dsh/profiles/safe/` — 安全 profile，只有 `dsh-base` + `dsh-safe-console`。
+- `~/.dsh/profiles/safe/` — 安全 profile，只有 `dsh-base` + `dsh-safe-tui`。

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// deepseek - launch the dsh-safe-console TUI.
+// deepseek - launch the dsh-safe-tui TUI.
 // This binary is installed by npm (or copied to PATH manually).
 import { spawnSync } from "node:child_process";
 

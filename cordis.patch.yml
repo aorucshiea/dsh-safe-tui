@@ -1,9 +1,9 @@
-# dsh-safe-console bundle: mounts the safe-mode recovery console over dsh-base.
+# dsh-safe-tui bundle: mounts the safe-mode recovery TUI over dsh-base.
 # This profile intentionally contains no web UI, no user plugins, and no
 # user-authored preset root.
 - insert:
     # The preset roster is part of the bundle so a fresh profile created with
-    # `dsh plugin --profile safe add github:.../dsh-safe-console` is complete
+    # `dsh plugin --profile safe add github:.../dsh-safe-tui` is complete
     # without extra manual patch files.
     - id: agent-presets
       name: '@deepseek-ai/dsh-agent-presets'
@@ -11,6 +11,6 @@
         default: minimal
         includeUserRoot: false
 
-    - id: safe-console
-      name: '@dsh-external/dsh-safe-console'
+    - id: safe-tui
+      name: '@dsh-external/dsh-safe-tui'
       config: {}
