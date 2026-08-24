@@ -41,6 +41,8 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 /help /list /new /resume <id> /preset [minimal|standard] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
 ```
 
+- 输入框为空时，`↑` / `↓` 或 `PgUp` / `PgDn` 可上下浏览会话历史；输入状态下 `↑` / `↓` 仍为命令历史。
+
 ## 从插件市场 / GitHub 安装
 
 插件本身是自包含的 DSH bundle，包含 `agent-presets` + `safe-tui`，无需手动建 profile：

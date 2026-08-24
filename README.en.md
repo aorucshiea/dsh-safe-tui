@@ -59,6 +59,7 @@ deepseek
 - Type `/` to open the command palette.
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
 - Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
+- When the input is empty, `↑` / `↓` or `PgUp` / `PgDn` scroll through conversation history; while typing, `↑` / `↓` recall command history.
 
 ## Other CLI usage
 
