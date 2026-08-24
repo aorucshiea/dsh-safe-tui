@@ -13,6 +13,8 @@ DeepSeek Harness 安全模式 / 修理终端。
 - 继承 `~/.dsh/sessions` 里的历史会话（`/list` + `/resume <id>`）；
 - 从内置 pristine 副本自动修复已损坏的官方客户端文件（`/repair` 或独立 Repair 快捷方式）。
 
+> 定位区别：`dsh-safe-tui` 是**安全模式/修复专用** TUI，不加载用户插件、不加载 Web、只允许 minimal/standard，用于主界面打不开时修理系统。它不是日常体验增强型 TUI（例如社区里的 `ccch1mneyyy/dsh-TUI`），二者定位不同、可以互补。
+
 ## 使用
 
 桌面已创建两个入口：
@@ -45,7 +47,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.1.0
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.2.0
 ```
 
 之后可以直接运行：

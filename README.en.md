@@ -12,11 +12,13 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 - Repair corrupted official client files from bundled pristine copies (`/repair` or the standalone Repair shortcut).
 - Switch models and providers (`/models`, `/providers`, `/add-provider`).
 
+> Difference: `dsh-safe-tui` is a **safe-mode / recovery** TUI. It does not load user plugins or Web UI and only exposes `minimal` / `standard`. It is not a general-purpose daily-driver TUI skin (e.g. `ccch1mneyyy/dsh-TUI`); the two have different purposes and can complement each other.
+
 ## Quick start
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.1.0
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.2.0
 ```
 
 Then either:
