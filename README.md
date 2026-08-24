@@ -42,10 +42,7 @@ node "C:\Users\Administrator\dsh-safe-console\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:<owner>/dsh-safe-console
-
-# 或使用已发布 npm 包
-dsh plugin --profile safe add @scope/dsh-safe-console
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-console#v0.1.0
 ```
 
 之后运行：
@@ -53,6 +50,8 @@ dsh plugin --profile safe add @scope/dsh-safe-console
 ```bash
 dsh --profile safe
 ```
+
+仓库：<https://github.com/aorucshiea/dsh-safe-console>
 
 ## 关键文件
 

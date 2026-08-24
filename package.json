@@ -2,6 +2,22 @@
   "name": "@dsh-external/dsh-safe-console",
   "version": "0.1.0",
   "description": "DeepSeek Harness safe-mode recovery console: minimal interactive terminal, no user plugins/presets, built-in repair",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aorucshiea/dsh-safe-console.git"
+  },
+  "homepage": "https://github.com/aorucshiea/dsh-safe-console",
+  "bugs": {
+    "url": "https://github.com/aorucshiea/dsh-safe-console/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "safe-mode",
+    "recovery",
+    "tui"
+  ],
   "type": "module",
   "main": "lib/index.js",
   "exports": {

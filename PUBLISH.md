@@ -51,12 +51,17 @@ dsh plugin --profile web add @scope/dsh-safe-console
 
 ### 3.1 把仓库推到 GitHub
 
+已完成：
+
+```text
+https://github.com/aorucshiea/dsh-safe-console
+分支：main
+```
+
+如果以后要重新推送：
+
 ```bash
 cd C:\Users\Administrator\dsh-safe-console
-git init
-git add .
-git commit -m "feat: dsh-safe-console recovery plugin"
-git remote add origin git@github.com:<你的用户名>/dsh-safe-console.git
 git push -u origin main
 ```
 
@@ -95,14 +100,11 @@ npm publish --access public
 dsh plugin --profile web add @scope/dsh-safe-console
 ```
 
-## 4. 建议的安装说明（写进 README）
+## 4. 建议的安装说明（已写进 README）
 
 ```bash
-# GitHub 安装（推荐，可固定 commit）
-dsh plugin --profile web add github:<owner>/dsh-safe-console#<commit-sha>
-
-# npm 安装（如果已发布）
-dsh plugin --profile web add @scope/dsh-safe-console
+# GitHub 安装（推荐，可固定 Release）
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-console#v0.1.0
 ```
 
 重启后打开：
@@ -117,13 +119,19 @@ http://127.0.0.1:3080/
 deepseek
 ```
 
-## 5. 当前环境限制
+## 5. 当前发布状态
 
-本机没有安装 `gh` CLI 和 GitHub 登录态，所以还不能直接帮你推送仓库、创建 GitHub Release。需要你提供 GitHub 用户名/仓库名，或先安装 `gh` 并登录：
+已完成：
 
-```bash
-winget install GitHub.cli
-gh auth login
-```
+- GitHub CLI 安装并登录
+- 公开仓库创建：https://github.com/aorucshiea/dsh-safe-console
+- 推送到 `main`
+- 添加 topics：`dsh-plugin`、`deepseek-harness`、`dsh`、`deepseek`
+- 创建 Release：v0.1.0
 
-之后我可以继续帮你执行 `git init`、提交、创建仓库、打 Release、加 topic 等发布动作。
+剩余可选：
+
+- 在 dsh-plugin.market Submit 页提交
+- 给 2BingLing/dsh-market 提交
+- 给 awesome-deepseek-harness 提交 PR
+- 发布到 npm
