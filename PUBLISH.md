@@ -61,7 +61,7 @@ https://github.com/aorucshiea/dsh-safe-console
 如果以后要重新推送：
 
 ```bash
-cd C:\Users\Administrator\dsh-safe-console
+cd dsh-safe-console
 git push -u origin main
 ```
 

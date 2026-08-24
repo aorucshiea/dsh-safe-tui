@@ -3,3 +3,14 @@ node_modules/
 *.tgz
 test-*.mjs
 tui-*.txt
+
+# Never commit local Harness state or credentials
+.dsh/
+settings.yaml
+*.settings.yaml
+.env
+.env.*
+credentials*
+*.credentials.yaml
+*.pem
+*.key

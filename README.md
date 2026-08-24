@@ -30,7 +30,7 @@ dsh --profile safe --list
 dsh --profile safe --resume <sessionId>
 dsh --profile safe --check
 dsh --profile safe --repair
-node "C:\Users\Administrator\dsh-safe-console\lib\repair.js" --repair
+node "%USERPROFILE%\dsh-safe-console\lib\repair.js" --repair
 ```
 
 安全终端内命令：
