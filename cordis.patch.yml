@@ -1,0 +1,7 @@
+# dsh-safe-console bundle: mounts the safe-mode recovery console over dsh-base.
+# This profile intentionally contains no web UI, no user plugins, and no
+# user-authored preset root.
+- insert:
+    - id: safe-console
+      name: '@dsh-external/dsh-safe-console'
+      config: {}
