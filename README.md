@@ -42,6 +42,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 ```
 
 - 输入框为空时，`↑` / `↓` 或 `PgUp` / `PgDn` 可上下浏览会话历史；输入状态下 `↑` / `↓` 仍为命令历史。
+- 模型思考与工具调用默认折叠为一行，按 `Ctrl+O` 可展开/收起全部详情；鼠标滚轮也可上下滚动历史。
 
 ## 从插件市场 / GitHub 安装
 
@@ -49,7 +50,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.2.2
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.3.0
 ```
 
 之后可以直接运行：

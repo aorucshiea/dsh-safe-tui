@@ -18,7 +18,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.2.2
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.3.0
 ```
 
 Then either:
@@ -60,6 +60,7 @@ deepseek
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
 - Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
 - When the input is empty, `↑` / `↓` or `PgUp` / `PgDn` scroll through conversation history; while typing, `↑` / `↓` recall command history.
+- Model reasoning and tool calls are collapsed to one line by default; press `Ctrl+O` to expand/collapse details. The mouse wheel can also scroll history.
 
 ## Other CLI usage
 
