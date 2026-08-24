@@ -28,9 +28,11 @@ dsh plugin --profile web add @scope/dsh-safe-console
 
 - 本仓库已经是合法 bundle：
   - `package.json` 有 `dsh.bundle.patch`
-  - 有 `cordis.patch.yml`
+  - 有 `cordis.patch.yml`，且 bundle 内自带 `agent-presets` + `safe-console`
   - 纯 JS、无 `prepare`/`postinstall` 安装脚本
   - 市场扫描器会判定为“可安全安装”的格式
+
+已用 `dsh plugin --profile <new> add <package>` 实测：新 profile 初始化后直接能跑 `dsh --profile <new> --help`，无需手工补丁。
 
 ## 2. 市场现状
 

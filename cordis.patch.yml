@@ -2,6 +2,15 @@
 # This profile intentionally contains no web UI, no user plugins, and no
 # user-authored preset root.
 - insert:
+    # The preset roster is part of the bundle so a fresh profile created with
+    # `dsh plugin --profile safe add github:.../dsh-safe-console` is complete
+    # without extra manual patch files.
+    - id: agent-presets
+      name: '@deepseek-ai/dsh-agent-presets'
+      config:
+        default: minimal
+        includeUserRoot: false
+
     - id: safe-console
       name: '@dsh-external/dsh-safe-console'
       config: {}

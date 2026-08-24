@@ -36,6 +36,24 @@ node "C:\Users\Administrator\dsh-safe-console\lib\repair.js" --repair
 /help /list /new /resume <id> /preset [minimal|standard] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
 ```
 
+## 从插件市场 / GitHub 安装
+
+插件本身是自包含的 DSH bundle，包含 `agent-presets` + `safe-console`，无需手动建 profile：
+
+```bash
+# 从 GitHub 安装并初始化 safe profile
+dsh plugin --profile safe add github:<owner>/dsh-safe-console
+
+# 或使用已发布 npm 包
+dsh plugin --profile safe add @scope/dsh-safe-console
+```
+
+之后运行：
+
+```bash
+dsh --profile safe
+```
+
 ## 关键文件
 
 - `cordis.patch.yml` — bundle 补丁，挂载 `safe-console` 插件。
