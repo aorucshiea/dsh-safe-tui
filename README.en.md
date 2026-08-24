@@ -2,6 +2,10 @@
 
 A safe-mode recovery TUI for DeepSeek Harness.
 
+## Demo
+
+<img src="assets/demo.gif" alt="dsh-safe-tui demo" width="800" />
+
 ## What it is
 
 When the main Web UI cannot start because of a broken plugin/client patch, use this standalone terminal to:

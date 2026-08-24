@@ -4,6 +4,10 @@
 
 DeepSeek Harness 安全模式 / 修理终端。
 
+## Demo
+
+<img src="assets/demo.gif" alt="dsh-safe-tui demo" width="800" />
+
 ## 它是什么
 
 当主 Web UI 因为插件/客户端补丁损坏而无法打开时，用这个独立的终端可以：
