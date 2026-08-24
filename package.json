@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-safe-tui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "DeepSeek Harness safe-mode recovery TUI: minimal interactive terminal, no user plugins/presets, built-in repair",
   "repository": {
     "type": "git",
