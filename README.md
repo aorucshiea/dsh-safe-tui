@@ -1,5 +1,7 @@
 # dsh-safe-console
 
+[English](README.en.md)
+
 DeepSeek Harness 安全模式 / 修理终端。
 
 ## 它是什么
@@ -21,8 +23,9 @@ DeepSeek Harness 安全模式 / 修理终端。
 也可以手动运行：
 
 ```bat
+deepseek                       :: 直接进入全屏 TUI
 dsh --profile safe
-dsh --profile safe "你的问题"          :: 一次性问答
+dsh --profile safe "你的问题"   :: 一次性问答
 dsh --profile safe --list
 dsh --profile safe --resume <sessionId>
 dsh --profile safe --check
@@ -45,11 +48,19 @@ node "C:\Users\Administrator\dsh-safe-console\lib\repair.js" --repair
 dsh plugin --profile safe add github:aorucshiea/dsh-safe-console#v0.1.0
 ```
 
-之后运行：
+之后可以直接运行：
 
 ```bash
 dsh --profile safe
 ```
+
+或者如果 `deepseek` 命令可用（npm 安装会自动提供，或把仓库里的 `deepseek.cmd` 复制到 PATH）：
+
+```bash
+deepseek
+```
+
+`deepseek` 会直接打开同一个全屏 TUI。
 
 仓库：<https://github.com/aorucshiea/dsh-safe-console>
 

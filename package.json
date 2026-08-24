@@ -20,6 +20,9 @@
   ],
   "type": "module",
   "main": "lib/index.js",
+  "bin": {
+    "deepseek": "bin/deepseek.js"
+  },
   "exports": {
     ".": {
       "default": "./lib/index.js"
@@ -32,7 +35,11 @@
   },
   "files": [
     "lib/**/*.js",
+    "bin/deepseek.js",
+    "deepseek.cmd",
     "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
     "pristine/**/*"
   ],
   "dsh": {
