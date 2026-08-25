@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.1
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.2
 ```
 
 Then either:
@@ -70,6 +70,7 @@ Official system presets:
 - Type `/` to open the command palette.
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
 - Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
+- `/list` and `/resume` show session titles first, with the session id after it for reference.
 - In the `/preset` picker, press `i` or `?` to show/hide the highlighted preset's description.
 - When the input is empty, `↑` / `↓` or `PgUp` / `PgDn` scroll through conversation history; while typing, `↑` / `↓` recall command history.
 - Model reasoning and tool calls are collapsed to one line by default; press `Ctrl+O` to expand/collapse details. The mouse wheel can also scroll history.
