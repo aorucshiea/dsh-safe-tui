@@ -1,7 +1,7 @@
 {
   "name": "@dsh-external/dsh-safe-tui",
-  "version": "0.4.16",
-  "description": "DeepSeek Harness safe-mode recovery TUI: interactive terminal with official system presets, no user plugins/presets, built-in repair",
+  "version": "0.5.0",
+  "description": "DeepSeek Harness safe-mode recovery TUI + Web Console: full Safe TUI in a browser tab and terminal-safe recovery for broken Web plugins",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aorucshiea/dsh-safe-tui.git"
@@ -27,6 +27,7 @@
     ".": {
       "default": "./lib/index.js"
     },
+    "./client": "./lib/client.js",
     "./repair": {
       "default": "./lib/repair.js"
     },
@@ -35,6 +36,7 @@
   },
   "files": [
     "lib/**/*.js",
+    "lib/web-console/**/*",
     "bin/deepseek.js",
     "deepseek.cmd",
     "cordis.patch.yml",
@@ -45,7 +47,17 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
     }
+  },
+  "dependencies": {
+    "node-pty": "1.2.0-beta.15",
+    "ws": "^8.21.3"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",

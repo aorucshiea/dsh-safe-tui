@@ -2,7 +2,7 @@
 
 [English](README.en.md)
 
-DeepSeek Harness 安全模式 / 修理终端。
+DeepSeek Harness 安全模式 / 修理终端，并可在 DSH Web 中作为“控制台”Tab 使用。
 
 ## Demo
 
@@ -18,6 +18,15 @@ DeepSeek Harness 安全模式 / 修理终端。
 - 从内置 pristine 副本自动修复已损坏的官方客户端文件（`/repair` 或独立 Repair 快捷方式）。
 
 > 定位区别：`dsh-safe-tui` 是**安全模式/修复专用** TUI，不加载用户插件、不加载 Web、只允许官方系统预设（minimal/standard/code/cordis），用于主界面打不开时修理系统。它不是日常体验增强型 TUI（例如社区里的 `ccch1mneyyy/dsh-TUI`），二者定位不同、可以互补。
+
+## Web 控制台
+
+自 v0.5.0 起，`dsh-safe-tui` 还提供一个 **Web Console** 模式：
+
+- 在 DSH Web 的 **“对话 | 轨迹”** Tab 最右侧新增 **“控制台”**。
+- 点击后打开一个真正的 xterm.js 终端，后端通过 `node-pty` 启动 `dsh --profile safe`。
+- 效果和 PowerShell/终端一致，可以完整使用 Safe TUI 的 `/sessions`、`/new`、`/preset`、`/repair` 等命令。
+- 当 Web 对话因插件错误无法加载时，左侧栏仍可用，可直接切到“控制台”继续操作 DSH。
 
 ## 使用
 
