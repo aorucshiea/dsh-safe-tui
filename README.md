@@ -25,7 +25,7 @@ DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控
 
 ![DSH Safe Console in DSH Web](docs/web-console.png)
 
-- 在 DSH Web 会话头部新增 **“控制台”** 按钮，点击后从右侧滑出一个可滚动的控制台面板（类似左侧栏）。
+- 在 DSH Web 的 **“对话 | 轨迹 | 控制台”** 保留“控制台”Tab；点击后从右侧滑出一个可滚动的控制台面板（类似左侧栏）。
 - 面板内是一个真正的 xterm.js 终端，后端通过 `node-pty` 启动 `dsh --profile safe`。
 - 效果和 PowerShell/终端一致，可以完整使用 Safe TUI 的 `/sessions`、`/new`、`/preset`、`/repair` 等命令。
 - 当 Web 对话因插件错误无法加载时，左侧栏仍可用，可直接切到“控制台”继续操作 DSH。
