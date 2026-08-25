@@ -2,7 +2,7 @@
 
 [English](README.en.md)
 
-DeepSeek Harness 安全模式 / 修理终端，并可在 DSH Web 中作为“控制台”Tab 使用。
+DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控制台”Tab 使用。
 
 ## Demo
 
