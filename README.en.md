@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.5
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.6
 ```
 
 Then either:
@@ -70,7 +70,7 @@ Official system presets:
 - Type `/` to open the command palette.
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
 - Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
-- `/list` and `/resume` show session titles first; press `i` or `?` to view the session id, cwd, and other full details.
+- `/list` and `/resume` group sessions by workspace (cwd), sorted by time within each workspace; titles come first, and press `i` or `?` to view full session id/path details.
 - `/clean` or `dsh --profile safe --clean` deletes all empty sessions that have no AI-generated content.
 - While a turn is generating, press **`Ctrl+C`** or **`Esc`** to cancel the current turn.
 - In the `/preset` picker, press `i` or `?` to show/hide the highlighted preset's description.
