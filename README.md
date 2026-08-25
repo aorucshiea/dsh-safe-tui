@@ -42,7 +42,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 安全终端内命令：
 
 ```
-/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
+/help /sessions /sessions all /list /list all /resume <id> /new /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
 ```
 
 官方系统 preset 的含义：
@@ -67,7 +67,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.14
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.15
 ```
 
 之后可以直接运行：

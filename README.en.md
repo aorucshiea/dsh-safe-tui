@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.14
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.15
 ```
 
 Then either:
@@ -57,7 +57,7 @@ deepseek
 ## TUI commands
 
 ```text
-/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
+/help /sessions /sessions all /list /list all /resume <id> /new /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
 ```
 
 Official system presets:
