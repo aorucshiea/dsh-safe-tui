@@ -55,7 +55,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.3.4
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.3.5
 ```
 
 之后可以直接运行：
