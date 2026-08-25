@@ -104,7 +104,7 @@ dsh plugin --profile web add @scope/dsh-safe-tui
 
 ```bash
 # GitHub 安装（推荐，可固定 Release）
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.3
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.4
 ```
 
 重启后打开：
@@ -127,7 +127,7 @@ deepseek
 - 公开仓库创建：https://github.com/aorucshiea/dsh-safe-tui
 - 推送到 `main`
 - 添加 topics：`dsh-plugin`、`deepseek-harness`、`dsh`、`deepseek`
-- 创建 Release：v0.4.3
+- 创建 Release：v0.4.4
 
 剩余可选：
 
