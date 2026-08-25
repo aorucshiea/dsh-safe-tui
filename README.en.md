@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.4
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.5
 ```
 
 Then either:
@@ -57,7 +57,7 @@ deepseek
 ## TUI commands
 
 ```text
-/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
+/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
 ```
 
 Official system presets:
@@ -71,6 +71,7 @@ Official system presets:
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
 - Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
 - `/list` and `/resume` show session titles first; press `i` or `?` to view the session id, cwd, and other full details.
+- `/clean` or `dsh --profile safe --clean` deletes all empty sessions that have no AI-generated content.
 - While a turn is generating, press **`Ctrl+C`** or **`Esc`** to cancel the current turn.
 - In the `/preset` picker, press `i` or `?` to show/hide the highlighted preset's description.
 - When the input is empty, `↑` / `↓` or `PgUp` / `PgDn` scroll through conversation history; while typing, `↑` / `↓` recall command history.

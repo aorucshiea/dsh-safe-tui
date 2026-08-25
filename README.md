@@ -42,7 +42,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 安全终端内命令：
 
 ```
-/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
+/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
 ```
 
 官方系统 preset 的含义：
@@ -53,6 +53,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 - `cordis` — 创造模式：标准全部能力 + 运行时检查、插件实验和 preset 创作指导（可修改/创建 preset）。
 
 - `/list` 和 `/resume` 优先显示会话标题（话题名）；按 `i` 或 `?` 可查看该会话的 ID、路径等完整信息。
+- `/clean` 或 `dsh --profile safe --clean` 会删除所有没有 AI 生成内容的空会话。
 - 对话生成中按 **`Ctrl+C`** 或 **`Esc`** 可强制取消当前回合，模型会停止并回到输入状态。
 - 在 `/preset` 选择器中按 `i` 或 `?` 可查看当前高亮预设的详细说明，再按一次收起。
 - 输入框为空时，`↑` / `↓` 或 `PgUp` / `PgDn` 可上下浏览会话历史；输入状态下 `↑` / `↓` 仍为命令历史。
@@ -65,7 +66,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.4
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.5
 ```
 
 之后可以直接运行：
