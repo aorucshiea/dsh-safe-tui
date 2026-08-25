@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-safe-tui",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "DeepSeek Harness safe-mode recovery TUI + Web Console: full Safe TUI in a browser tab and terminal-safe recovery for broken Web plugins",
   "repository": {
     "type": "git",
@@ -65,7 +65,8 @@
     "@deepseek-ai/dsh-agent": "^0.1.0-rc.6",
     "@deepseek-ai/dsh-headless": "^0.1.0-rc.6",
     "@deepseek-ai/dsh-llm": "^0.1.0-rc.6",
-    "@deepseek-ai/dsh-session": "^0.1.0-rc.6"
+    "@deepseek-ai/dsh-session": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
   },
   "license": "MIT"
 }
