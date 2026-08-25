@@ -12,7 +12,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 - Load only `dsh-base` + `dsh-safe-tui`; no user plugins, no Web UI.
 - Disable user-authored presets (`includeUserRoot: false`); only official system presets are exposed: `minimal` / `standard` / `code` / `cordis`.
-- Inherit existing DeepSeek history from `~/.dsh/sessions` (`/list` + `/resume <id>`).
+- Inherit existing DeepSeek history from `~/.dsh/sessions` (`/sessions`).
 - Repair corrupted official client files from bundled pristine copies (`/repair` or the standalone Repair shortcut).
 - Switch models and providers (`/models`, `/providers`, `/add-provider`).
 
@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.15
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.16
 ```
 
 Then either:
@@ -57,7 +57,7 @@ deepseek
 ## TUI commands
 
 ```text
-/help /sessions /sessions all /list /list all /resume <id> /new /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
+/help /sessions /sessions all /new /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
 ```
 
 Official system presets:
@@ -69,9 +69,8 @@ Official system presets:
 
 - Type `/` to open the command palette.
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
-- Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
-- `/resume` uses an OpenCode-style Sessions dialog: type to filter, grouped by Today/Yesterday/date, workspace folder at the end of each row, current session marked with `●`; press `Ctrl+X` twice to delete the selected session.
-- `/list` groups sessions by workspace (cwd), sorted by time within each workspace; titles come first and press `i` or `?` to view full session id/path details.
+- Selecting `/model`, `/sessions`, or `/preset` opens a second-level picker.
+- `/sessions` uses an OpenCode-style Sessions dialog: type to filter, grouped by Today/Yesterday/date, workspace folder at the end of each row, current session marked with `●`; press `Ctrl+X` twice to delete the selected session.
 - `/clean` or `dsh --profile safe --clean` deletes all empty sessions that have no AI-generated content.
 - While a turn is generating, press **`Ctrl+C`** or **`Esc`** to cancel the current turn.
 - In the `/preset` picker, press `i` or `?` to show/hide the highlighted preset's description.

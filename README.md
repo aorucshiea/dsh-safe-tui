@@ -14,7 +14,7 @@ DeepSeek Harness 安全模式 / 修理终端。
 
 - 不加载任何用户插件、不加载 Web UI；
 - 不发现用户自建预设（`includeUserRoot: false`），交互上只允许官方系统预设：`minimal` / `standard` / `code` / `cordis`；
-- 继承 `~/.dsh/sessions` 里的历史会话（`/list` + `/resume <id>`）；
+- 继承 `~/.dsh/sessions` 里的历史会话（`/sessions`）；
 - 从内置 pristine 副本自动修复已损坏的官方客户端文件（`/repair` 或独立 Repair 快捷方式）。
 
 > 定位区别：`dsh-safe-tui` 是**安全模式/修复专用** TUI，不加载用户插件、不加载 Web、只允许官方系统预设（minimal/standard/code/cordis），用于主界面打不开时修理系统。它不是日常体验增强型 TUI（例如社区里的 `ccch1mneyyy/dsh-TUI`），二者定位不同、可以互补。
@@ -42,7 +42,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 安全终端内命令：
 
 ```
-/help /sessions /sessions all /list /list all /resume <id> /new /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
+/help /sessions /sessions all /new /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /clean /check /quit
 ```
 
 官方系统 preset 的含义：
@@ -52,8 +52,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 - `code` — PTC 模式：标准全部能力 + Code Mode SDK，用 TypeScript 程序组合多步操作。
 - `cordis` — 创造模式：标准全部能力 + 运行时检查、插件实验和 preset 创作指导（可修改/创建 preset）。
 
-- `/resume` 采用 OpenCode 风格的 Sessions 选择器：可直接输入过滤，按 Today/Yesterday/日期分组，行尾显示工作区目录，当前会话带 `●` 标记；按 `Ctrl+X` 两次可删除选中会话。
-- `/list` 按工作区（cwd）分组，组内按时间倒序；优先显示会话标题（话题名）。
+- `/sessions` 采用 OpenCode 风格的 Sessions 选择器：可直接输入过滤，按 Today/Yesterday/日期分组，行尾显示工作区目录，当前会话带 `●` 标记；按 `Ctrl+X` 两次可删除选中会话。
 - `/clean` 或 `dsh --profile safe --clean` 会删除所有没有 AI 生成内容的空会话。
 - 对话生成中按 **`Ctrl+C`** 或 **`Esc`** 可强制取消当前回合，模型会停止并回到输入状态。
 - 在 `/preset` 选择器中按 `i` 或 `?` 可查看当前高亮预设的详细说明，再按一次收起。
@@ -67,7 +66,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.15
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.16
 ```
 
 之后可以直接运行：
