@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.12
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.13
 ```
 
 Then either:
