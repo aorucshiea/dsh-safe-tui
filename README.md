@@ -52,7 +52,8 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 - `code` — PTC 模式：标准全部能力 + Code Mode SDK，用 TypeScript 程序组合多步操作。
 - `cordis` — 创造模式：标准全部能力 + 运行时检查、插件实验和 preset 创作指导（可修改/创建 preset）。
 
-- `/list` 和 `/resume` 优先显示会话标题（话题名），会话 ID 显示在后面便于核对。
+- `/list` 和 `/resume` 优先显示会话标题（话题名）；按 `i` 或 `?` 可查看该会话的 ID、路径等完整信息。
+- 对话生成中按 **`Ctrl+C`** 或 **`Esc`** 可强制取消当前回合，模型会停止并回到输入状态。
 - 在 `/preset` 选择器中按 `i` 或 `?` 可查看当前高亮预设的详细说明，再按一次收起。
 - 输入框为空时，`↑` / `↓` 或 `PgUp` / `PgDn` 可上下浏览会话历史；输入状态下 `↑` / `↓` 仍为命令历史。
 - 模型思考与工具调用默认折叠为一行，按 `Ctrl+O` 可展开/收起全部详情；鼠标滚轮也可上下滚动历史。
@@ -64,7 +65,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.2
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.3
 ```
 
 之后可以直接运行：
