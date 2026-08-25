@@ -27,6 +27,7 @@ DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控
 - 点击后打开一个真正的 xterm.js 终端，后端通过 `node-pty` 启动 `dsh --profile safe`。
 - 效果和 PowerShell/终端一致，可以完整使用 Safe TUI 的 `/sessions`、`/new`、`/preset`、`/repair` 等命令。
 - 当 Web 对话因插件错误无法加载时，左侧栏仍可用，可直接切到“控制台”继续操作 DSH。
+- Safe TUI 会自动修复因强制中断产生的会话日志 seq 重复问题，恢复后可直接继续历史会话。
 
 ## 使用
 

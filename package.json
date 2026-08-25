@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-safe-tui",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "DeepSeek Harness safe-mode recovery TUI + Web Console: full Safe TUI in a browser tab and terminal-safe recovery for broken Web plugins",
   "repository": {
     "type": "git",
