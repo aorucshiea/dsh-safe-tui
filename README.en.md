@@ -65,6 +65,7 @@ deepseek
 - Selecting `/model`, `/resume`, or `/preset` opens a second-level picker.
 - When the input is empty, `↑` / `↓` or `PgUp` / `PgDn` scroll through conversation history; while typing, `↑` / `↓` recall command history.
 - Model reasoning and tool calls are collapsed to one line by default; press `Ctrl+O` to expand/collapse details. The mouse wheel can also scroll history.
+- You can switch `preset` inside an existing session; a warning is shown because old tool calls may not match the new preset.
 
 ## Other CLI usage
 
