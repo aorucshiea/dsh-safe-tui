@@ -13,11 +13,11 @@ DeepSeek Harness 安全模式 / 修理终端。
 当主 Web UI 因为插件/客户端补丁损坏而无法打开时，用这个独立的终端可以：
 
 - 不加载任何用户插件、不加载 Web UI；
-- 不发现用户自建预设（`includeUserRoot: false`），交互上只允许 `minimal` / `standard`；
+- 不发现用户自建预设（`includeUserRoot: false`），交互上只允许官方系统预设：`minimal` / `standard` / `code` / `cordis`；
 - 继承 `~/.dsh/sessions` 里的历史会话（`/list` + `/resume <id>`）；
 - 从内置 pristine 副本自动修复已损坏的官方客户端文件（`/repair` 或独立 Repair 快捷方式）。
 
-> 定位区别：`dsh-safe-tui` 是**安全模式/修复专用** TUI，不加载用户插件、不加载 Web、只允许 minimal/standard，用于主界面打不开时修理系统。它不是日常体验增强型 TUI（例如社区里的 `ccch1mneyyy/dsh-TUI`），二者定位不同、可以互补。
+> 定位区别：`dsh-safe-tui` 是**安全模式/修复专用** TUI，不加载用户插件、不加载 Web、只允许官方系统预设（minimal/standard/code/cordis），用于主界面打不开时修理系统。它不是日常体验增强型 TUI（例如社区里的 `ccch1mneyyy/dsh-TUI`），二者定位不同、可以互补。
 
 ## 使用
 
@@ -42,8 +42,15 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 安全终端内命令：
 
 ```
-/help /list /new /resume <id> /preset [minimal|standard] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
+/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
 ```
+
+官方系统 preset 的含义：
+
+- `minimal` — 极简模式：仅持久 bash + `str_replace_editor` 双工具编码 Agent。
+- `standard` — 标准模式：完整编码 Agent，含文件编辑、Shell、检索、Skills、计划、目标、子代理、工作流。
+- `code` — PTC 模式：标准全部能力 + Code Mode SDK，用 TypeScript 程序组合多步操作。
+- `cordis` — 创造模式：标准全部能力 + 运行时检查、插件实验和 preset 创作指导（可修改/创建 preset）。
 
 - 输入框为空时，`↑` / `↓` 或 `PgUp` / `PgDn` 可上下浏览会话历史；输入状态下 `↑` / `↓` 仍为命令历史。
 - 模型思考与工具调用默认折叠为一行，按 `Ctrl+O` 可展开/收起全部详情；鼠标滚轮也可上下滚动历史。
@@ -55,7 +62,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.3.6
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.0
 ```
 
 之后可以直接运行：

@@ -11,18 +11,18 @@ A safe-mode recovery TUI for DeepSeek Harness.
 When the main Web UI cannot start because of a broken plugin/client patch, use this standalone terminal to:
 
 - Load only `dsh-base` + `dsh-safe-tui`; no user plugins, no Web UI.
-- Disable user-authored presets (`includeUserRoot: false`); only `minimal` / `standard` are exposed.
+- Disable user-authored presets (`includeUserRoot: false`); only official system presets are exposed: `minimal` / `standard` / `code` / `cordis`.
 - Inherit existing DeepSeek history from `~/.dsh/sessions` (`/list` + `/resume <id>`).
 - Repair corrupted official client files from bundled pristine copies (`/repair` or the standalone Repair shortcut).
 - Switch models and providers (`/models`, `/providers`, `/add-provider`).
 
-> Difference: `dsh-safe-tui` is a **safe-mode / recovery** TUI. It does not load user plugins or Web UI and only exposes `minimal` / `standard`. It is not a general-purpose daily-driver TUI skin (e.g. `ccch1mneyyy/dsh-TUI`); the two have different purposes and can complement each other.
+> Difference: `dsh-safe-tui` is a **safe-mode / recovery** TUI. It does not load user plugins or Web UI and only exposes official system presets (`minimal` / `standard` / `code` / `cordis`). It is not a general-purpose daily-driver TUI skin (e.g. `ccch1mneyyy/dsh-TUI`); the two have different purposes and can complement each other.
 
 ## Quick start
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.3.6
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.0
 ```
 
 Then either:
@@ -57,8 +57,15 @@ deepseek
 ## TUI commands
 
 ```text
-/help /list /new /resume <id> /preset [minimal|standard] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
+/help /list /new /resume <id> /preset [minimal|standard|code|cordis] /models /models <provider/model> /providers /add-provider /status /repair /check /quit
 ```
+
+Official system presets:
+
+- `minimal` — minimal mode: persistent bash + `str_replace_editor` only.
+- `standard` — standard mode: full coding agent (files, shell, search, skills, plans, goals, subagents, workflows).
+- `code` — PTC mode: all standard capabilities plus the Code Mode TypeScript SDK for multi-step operations.
+- `cordis` — creation mode: all standard capabilities plus runtime inspection, plugin experimentation, and preset authoring.
 
 - Type `/` to open the command palette.
 - Use `↑` / `↓` to navigate, `Enter` to choose, `Esc` to cancel.
