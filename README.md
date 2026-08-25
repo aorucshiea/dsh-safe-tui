@@ -23,6 +23,8 @@ DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控
 
 自 v0.5.0 起，`dsh-safe-tui` 还提供一个 **Web Console** 模式：
 
+![DSH Safe Console in DSH Web](docs/web-console.png)
+
 - 在 DSH Web 的 **“对话 | 轨迹”** Tab 最右侧新增 **“控制台”**。
 - 点击后打开一个真正的 xterm.js 终端，后端通过 `node-pty` 启动 `dsh --profile safe`。
 - 效果和 PowerShell/终端一致，可以完整使用 Safe TUI 的 `/sessions`、`/new`、`/preset`、`/repair` 等命令。

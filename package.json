@@ -42,6 +42,7 @@
     "cordis.patch.yml",
     "README.md",
     "README.en.md",
+    "docs",
     "pristine/**/*"
   ],
   "dsh": {
