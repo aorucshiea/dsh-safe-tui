@@ -25,24 +25,24 @@ DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控
 
 ![DSH Safe Console in DSH Web](docs/web-console.png)
 
-- 在 DSH Web 的 **“对话 | 轨迹”** Tab 最右侧新增 **“控制台”**。
-- 点击后打开一个真正的 xterm.js 终端，后端通过 `node-pty` 启动 `dsh --profile safe`。
+- 在 DSH Web 会话头部新增 **“控制台”** 按钮，点击后从右侧滑出一个可滚动的控制台面板（类似左侧栏）。
+- 面板内是一个真正的 xterm.js 终端，后端通过 `node-pty` 启动 `dsh --profile safe`。
 - 效果和 PowerShell/终端一致，可以完整使用 Safe TUI 的 `/sessions`、`/new`、`/preset`、`/repair` 等命令。
 - 当 Web 对话因插件错误无法加载时，左侧栏仍可用，可直接切到“控制台”继续操作 DSH。
 - Safe TUI 会自动修复因强制中断产生的会话日志 seq 重复问题，恢复后可直接继续历史会话。
 
 ### 同会话穿梭（v0.6.0）
 
-控制台默认**继续当前 Web 会话**：打开“控制台”Tab 时会自动附上当前 `sessionId`，后端以 `dsh --profile safe --resume <sessionId>` 启动 Safe TUI，因此 Web 和 TUI 看到的是同一条对话。
+控制台默认**继续当前 Web 会话**：打开右侧“控制台”面板时会自动附上当前 `sessionId`，后端以 `dsh --profile safe --resume <sessionId>` 启动 Safe TUI，因此 Web 和 TUI 看到的是同一条对话。
 
 - Web 服务重启后，Safe TUI 由独立的 `console-bridge` 进程托管，不会跟着 Web 进程一起退出；浏览器重连后会重放终端滚动缓冲，TUI 保持存活。
 - AI 可以通过工具自助穿梭/配置：
   - `console_status` — 查看当前 session / model / preset / cwd；
   - `console_set_model` — 切换当前对话模型（Web 侧立即生效，Safe TUI 侧下一步生效并保存默认）；
   - `console_set_preset` — 切换当前对话预设（Web 侧仅空白会话允许，TUI 侧带历史警告）；
-  - `console_handoff` — 把当前 Web 会话移交给“控制台”（自动切标签并 resume 同一 session）；
-  - `console_return` — 从 Safe TUI 请求回到 Web 对话 Tab。
-- 控制台头部有“回到对话”按钮；断线后会自动重连。
+  - `console_handoff` — 把当前 Web 会话移交给右侧“控制台”面板（自动打开面板并 resume 同一 session）；
+  - `console_return` — 从 Safe TUI 请求关闭控制台并回到 Web 对话。
+- 控制台面板可关闭；断线后会自动重连。
 
 ## 使用
 
