@@ -7,14 +7,48 @@ window.__ModuleLoader__.load({
 		let react_jsx_runtime = require("react/jsx-runtime");
 		let react = require("react");
 		let _deepseek_ai_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
-		let _deepseek_ai_dsh_client_runtime_client = require("@deepseek-ai/dsh-client-runtime/client");
+		let _deepseek_ai_dsh_client_store = require("@deepseek-ai/dsh-client-store");
+		//#region ../../preset/agent-presets/src/display.ts
+		const BUILT_IN_PRESET_KEYS = {
+			standard: {
+				name: "presetStandardName",
+				description: "presetStandardDescription"
+			},
+			ptc: {
+				name: "presetPtcName",
+				description: "presetPtcDescription"
+			},
+			minimal: {
+				name: "presetMinimalName",
+				description: "presetMinimalDescription"
+			},
+			cordis: {
+				name: "presetCordisName",
+				description: "presetCordisDescription"
+			}
+		};
+		/**
+		* Resolve preset display copy without making user-authored metadata translatable.
+		* @param preset - roster row whose copy is being rendered.
+		* @param t - active locale lookup covering {@link BuiltInPresetCopyKey}.
+		* @returns localized copy for a known shipped preset, otherwise file metadata.
+		*/
+		function presetDisplayText(preset, t) {
+			const keys = preset.trust === "system" ? BUILT_IN_PRESET_KEYS[preset.id] : void 0;
+			if (keys !== void 0) return {
+				name: t(keys.name),
+				description: t(keys.description)
+			};
+			return {
+				name: preset.name ?? preset.id,
+				...preset.description === void 0 ? {} : { description: preset.description }
+			};
+		}
+		//#endregion
 		//#region lib/types/client/locales.js
-		/** Locale bundles for the agent-preset settings row, hero chip, header label, and management section. */
+		/** Locale bundles for the agent-preset hero chip, header label, and management section. */
 		/** English copy. */
 		const en = {
-			title: "Agent preset",
-			description: "Applies to sessions you start from now on. Running sessions keep the preset they began with.",
-			loading: "Loading presets…",
 			error: "Could not load agent presets.",
 			userTrust: "Custom",
 			seatHint: "Agent preset for the session you are about to start",
@@ -26,10 +60,10 @@ window.__ModuleLoader__.load({
 			view: "View",
 			presetStandardName: "Standard mode",
 			presetStandardDescription: "Full coding agent with file editing, shell, file and web search, skills, planning, goals, subagents, and workflows.",
-			presetCodeName: "Code mode",
-			presetCodeDescription: "All Standard mode capabilities, with tools exposed through the Code Mode SDK so the model can combine multi-step operations in one TypeScript program.",
+			presetPtcName: "PTC mode",
+			presetPtcDescription: "Full coding agent without the workflow tool; other tools are exposed through the PTC mode SDK so the model can combine multi-step operations in one TypeScript program.",
 			presetMinimalName: "Minimal mode",
-			presetMinimalDescription: "Two-tool coding agent with persistent bash and str_replace_editor.",
+			presetMinimalDescription: "Single-tool coding agent with a persistent shell.",
 			presetCordisName: "Creator mode",
 			presetCordisDescription: "Built for creating custom agent presets, with all Standard mode capabilities plus runtime inspection, plugin experiments, and preset-authoring guidance.",
 			duplicate: "Duplicate",
@@ -45,6 +79,7 @@ window.__ModuleLoader__.load({
 			noDescription: "No description.",
 			brokenBadge: "Failed to load",
 			brokenNoCopy: "A preset that failed to load cannot be duplicated",
+			switchRefused: "Could not switch to {name}: {reason}",
 			copyOf: "Copied from",
 			composition: "Composition (agent.cordis.yml)",
 			cancel: "Cancel",
@@ -68,9 +103,6 @@ window.__ModuleLoader__.load({
 		};
 		/** Simplified Chinese copy. */
 		const zh = {
-			title: "Agent 预设",
-			description: "对此后新建的会话生效。运行中的会话保持它开始时的预设。",
-			loading: "正在加载预设…",
 			error: "无法加载 Agent 预设。",
 			userTrust: "自定义",
 			seatHint: "即将开始的这个会话所用的 Agent 预设",
@@ -78,14 +110,14 @@ window.__ModuleLoader__.load({
 			nav: "Agent 预设",
 			sectionIntro: "预设即一个会话的 Agent 所运行的插件组装 —— 它的工具、提示词与能力。复制一份既有预设改成自己的，或用「创造模式」让 Agent 帮你创建。",
 			builtIn: "内置",
-			setDefault: "设为新会话默认",
+			setDefault: "设为默认",
 			view: "查看",
 			presetStandardName: "标准模式",
 			presetStandardDescription: "功能完整的编码 Agent，支持文件编辑、Shell、文件与网页检索、Skills、计划、目标、子代理和工作流。",
-			presetCodeName: "PTC 模式",
-			presetCodeDescription: "具备标准模式的全部能力，并通过 Code Mode SDK 呈现工具，让模型用一个 TypeScript 程序组合多步操作。",
+			presetPtcName: "PTC 模式",
+			presetPtcDescription: "功能完整的编码 Agent，但默认不提供 workflow 工具；其他工具通过 PTC 模式 SDK 呈现，让模型用一个 TypeScript 程序组合多步操作。",
 			presetMinimalName: "极简模式",
-			presetMinimalDescription: "仅提供持久 bash 与 str_replace_editor 的双工具编码 Agent。",
+			presetMinimalDescription: "仅提供持久 shell 的单工具编码 Agent。",
 			presetCordisName: "创造模式",
 			presetCordisDescription: "用于创建自定义 Agent preset：具备标准模式的全部能力，并提供运行时检查、插件实验和 preset 创作指导。",
 			duplicate: "复制",
@@ -95,12 +127,13 @@ window.__ModuleLoader__.load({
 			presetIdPlaceholder: "my-agent",
 			displayName: "名称",
 			displayNamePlaceholder: "选择器中显示的名字，缺省用标识符",
-			inUse: "新会话默认",
+			inUse: "当前使用",
 			builtInGroup: "内置",
 			customGroup: "自定义",
 			noDescription: "暂无描述。",
 			brokenBadge: "加载失败",
 			brokenNoCopy: "预设加载失败，不能复制",
+			switchRefused: "无法切换到「{name}」：{reason}",
 			copyOf: "复制自",
 			composition: "组装（agent.cordis.yml）",
 			cancel: "取消",
@@ -122,50 +155,15 @@ window.__ModuleLoader__.load({
 			deleteConfirm: "删除",
 			deleting: "正在删除…"
 		};
-		const BUILT_IN_PRESET_KEYS = {
-			standard: {
-				name: "presetStandardName",
-				description: "presetStandardDescription"
-			},
-			code: {
-				name: "presetCodeName",
-				description: "presetCodeDescription"
-			},
-			minimal: {
-				name: "presetMinimalName",
-				description: "presetMinimalDescription"
-			},
-			cordis: {
-				name: "presetCordisName",
-				description: "presetCordisDescription"
-			}
-		};
-		/**
-		* Resolve preset display copy without making user-authored metadata translatable.
-		* @param preset - roster row whose copy is being rendered.
-		* @param t - active Web locale lookup.
-		* @returns localized copy for a known shipped preset, otherwise file metadata.
-		*/
-		function presetDisplayText(preset, t) {
-			const keys = preset.trust === "system" ? BUILT_IN_PRESET_KEYS[preset.id] : void 0;
-			if (keys !== void 0) return {
-				name: t(keys.name),
-				description: t(keys.description)
-			};
-			return {
-				name: preset.name ?? preset.id,
-				...preset.description === void 0 ? {} : { description: preset.description }
-			};
-		}
 		//#endregion
 		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-agent-preset/src/client/AgentPresetLabel.module.css.mjs
-		const css$3 = ".SVAs4q_label{background:var(--dsw-alias-fill-tsp-secondary);max-width:180px;height:22px;color:var(--dsw-alias-label-secondary);white-space:nowrap;text-overflow:ellipsis;border-radius:6px;align-items:center;gap:4px;padding:0 2px 0 0;font-size:12px;line-height:22px;display:inline-flex;overflow:hidden}.SVAs4q_icon{opacity:.7;flex:none}";
-		const tagId$3 = "@deepseek-ai/dsh-client-ui-agent-preset/AgentPresetLabel.module.css";
-		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$3) + "]") === null) {
+		const css$2 = ".SVAs4q_label{background:var(--dsw-alias-fill-tsp-secondary);max-width:180px;height:22px;color:var(--dsw-alias-label-secondary);white-space:nowrap;text-overflow:ellipsis;border-radius:6px;align-items:center;gap:4px;padding:0 2px 0 0;font-size:12px;line-height:22px;display:inline-flex;overflow:hidden}.SVAs4q_icon{opacity:.7;flex:none}";
+		const tagId$2 = "@deepseek-ai/dsh-client-ui-agent-preset/AgentPresetLabel.module.css";
+		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
 			const tag = document.createElement("style");
 			tag.dataset.plugin = "@deepseek-ai/dsh-client-ui-agent-preset";
-			tag.dataset.pluginCss = tagId$3;
-			tag.textContent = css$3;
+			tag.dataset.pluginCss = tagId$2;
+			tag.textContent = css$2;
 			document.head.appendChild(tag);
 		}
 		var AgentPresetLabel_module_css_default = {
@@ -188,152 +186,81 @@ window.__ModuleLoader__.load({
 		* @param props - composed slot props.
 		* @returns the label, or null when the session records no preset.
 		*/
-		function AgentPresetLabel({ sessionId, useSessions, useAgentPresets, load, t }) {
-			const preset = useSessions((state) => state.byId[sessionId]?.agentPreset);
-			const options = useAgentPresets((state) => state.options);
-			(0, react.useEffect)(() => {
-				if (preset !== void 0) load();
-			}, [preset, load]);
-			if (preset === void 0) return null;
-			const option = options.find((entry) => entry.id === preset);
-			const text = option === void 0 ? void 0 : presetDisplayText(option, t);
-			return (0, react_jsx_runtime.jsxs)("span", {
-				className: AgentPresetLabel_module_css_default.label,
-				title: text?.description ?? t("headerHint"),
-				children: [(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, {
-					size: 14,
-					className: AgentPresetLabel_module_css_default.icon
-				}), text?.name ?? preset]
-			});
-		}
-		//#endregion
-		//#region lib/types/client/PresetMenu.js
-		/**
-		* The preset picker both surfaces render: a menu of presets over a button
-		* naming the current one.
-		*
-		* The settings row and the composer seat differ in where they sit, what they
-		* call the current value, and when they refuse a pick — not in how the picker
-		* itself behaves. Trust is the one thing the list always says: a locally
-		* authored preset is exactly as privileged as the plugins it names, so the
-		* label marks it rather than presenting every preset as shipped and vetted.
-		*/
-		/**
-		* Render the preset picker.
-		* @param props - the calling surface's copy, styling, and handlers.
-		* @returns the menu and its trigger.
-		*/
-		function PresetMenu({ options, selectedId, label, t, buttonClassName, chevronClassName, disabled, open, onOpenChange, onSelect }) {
-			return (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Menu, {
-				open,
-				onClose: () => {
-					onOpenChange(false);
-				},
-				items: options.map((option) => {
-					const name = presetDisplayText(option, t).name;
-					return {
-						id: option.id,
-						label: option.trust === "user" ? `${name} · ${t("userTrust")}` : name
-					};
-				}),
-				selectedId,
-				onSelect: (id) => {
-					onOpenChange(false);
-					onSelect(id);
-				},
-				align: "end",
-				portal: true,
-				anchor: (0, react_jsx_runtime.jsxs)("button", {
-					type: "button",
-					className: buttonClassName,
-					"aria-haspopup": "menu",
-					"aria-expanded": open,
-					disabled,
-					onClick: () => {
-						onOpenChange(!open);
-					},
-					children: [label, (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconChevronDownOutline14, { className: chevronClassName })]
-				})
-			});
-		}
-		//#endregion
-		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-agent-preset/src/client/AgentPresetRow.module.css.mjs
-		const css$2 = "._5QVD0a_row{border-bottom:1px solid var(--dsw-alias-border-l2);align-items:center;gap:8px;padding:16px 0;display:flex}._5QVD0a_rowText{flex-direction:column;flex:1;gap:4px;min-width:0;padding-right:48px;display:flex}._5QVD0a_title{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:400;line-height:22px}._5QVD0a_desc{color:var(--dsw-alias-label-tertiary);font-size:12px;font-weight:400;line-height:18px}._5QVD0a_selector{background:var(--dsw-alias-bg-module-platform);height:36px;font:inherit;color:var(--dsw-alias-label-primary);cursor:pointer;border:none;border-radius:18px;align-items:center;gap:12px;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}._5QVD0a_selector:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}._5QVD0a_selector:disabled{cursor:default}._5QVD0a_chevron{flex:none}";
-		const tagId$2 = "@deepseek-ai/dsh-client-ui-agent-preset/AgentPresetRow.module.css";
-		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
-			const tag = document.createElement("style");
-			tag.dataset.plugin = "@deepseek-ai/dsh-client-ui-agent-preset";
-			tag.dataset.pluginCss = tagId$2;
-			tag.textContent = css$2;
-			document.head.appendChild(tag);
-		}
-		var AgentPresetRow_module_css_default = {
-			"row": "_5QVD0a_row",
-			"title": "_5QVD0a_title",
-			"rowText": "_5QVD0a_rowText",
-			"desc": "_5QVD0a_desc",
-			"chevron": "_5QVD0a_chevron",
-			"selector": "_5QVD0a_selector"
-		};
-		//#endregion
-		//#region lib/types/client/AgentPresetRow.js
-		/**
-		* Agent-preset preference row: the preset new sessions are composed from.
-		* A running session keeps the composition it began with, so this row never
-		* disturbs work in progress.
-		*/
-		/**
-		* Render the new-session agent-preset selector.
-		* @param props - composed slot props.
-		* @returns the row, or null when the deployment composes no presets.
-		*/
-		function AgentPresetRow({ load, select, useAgentPreset, t }) {
-			const state = useAgentPreset((snapshot) => snapshot);
-			const [open, setOpen] = (0, react.useState)(false);
-			(0, react.useEffect)(() => {
-				load();
-			}, [load]);
-			(0, react.useEffect)(() => {
-				if (state.writable && state.status !== "unavailable") return;
-				setOpen(false);
-			}, [state.status, state.writable]);
-			if (state.status === "unavailable") return null;
-			const busy = state.status === "loading" || state.status === "saving";
-			const chosen = state.options.find((option) => option.id === state.currentValue);
-			const chosenText = chosen === void 0 ? void 0 : presetDisplayText(chosen, t);
-			const label = state.currentValue === "" ? t("loading") : chosenText?.name ?? state.currentValue;
-			const description = state.error ?? t("description");
-			return (0, react_jsx_runtime.jsxs)("div", {
-				className: AgentPresetRow_module_css_default.row,
-				children: [(0, react_jsx_runtime.jsxs)("div", {
-					className: AgentPresetRow_module_css_default.rowText,
-					children: [(0, react_jsx_runtime.jsx)("div", {
-						className: AgentPresetRow_module_css_default.title,
-						children: t("title")
-					}), (0, react_jsx_runtime.jsx)("div", {
-						className: AgentPresetRow_module_css_default.desc,
-						role: state.error === null ? void 0 : "alert",
-						children: description
-					})]
-				}), (0, react_jsx_runtime.jsx)(PresetMenu, {
-					options: state.options,
-					selectedId: state.currentValue,
-					label,
-					t,
-					buttonClassName: AgentPresetRow_module_css_default.selector,
-					chevronClassName: AgentPresetRow_module_css_default.chevron,
-					disabled: busy || !state.writable || state.options.length === 0,
-					open,
-					onOpenChange: setOpen,
-					onSelect: (id) => {
-						select(id);
-					}
-				})]
-			});
-		}
+		// preset-switch-dropdown-v7
+function AgentPresetLabel({ sessionId, useSessions, useAgentPresets, load, t }) {
+  const preset = useSessions((state) => state.byId[sessionId]?.agentPreset);
+  const options = useAgentPresets((state) => state.options);
+  const [enabled, setEnabled] = react.useState(null);
+  react.useEffect(() => {
+    if (preset !== undefined) load();
+  }, [preset, load]);
+  react.useEffect(() => {
+    let alive = true;
+    const loadStatus = () => {
+      fetch("/preset-switch/api/status")
+        .then((r) => r.json())
+        .then((d) => { if (alive) setEnabled(Boolean(d?.enabled)); })
+        .catch(() => { if (alive) setEnabled(true); });
+    };
+    loadStatus();
+    const timer = window.setInterval(loadStatus, 5000);
+    const onFocus = () => loadStatus();
+    window.addEventListener("focus", onFocus);
+    return () => { alive = false; window.clearInterval(timer); window.removeEventListener("focus", onFocus); };
+  }, []);
+  react.useEffect(() => {
+    const id = "preset-switch-dropdown-style";
+    if (document.getElementById(id)) return;
+    const s = document.createElement("style");
+    s.id = id;
+    s.textContent = ".psd-summary{background:rgba(255,255,255,0.04);transition:background .15s}.psd-summary:hover{background:rgba(255,255,255,0.14)!important}.psd-menu-item{transition:background .15s}.psd-menu-item:hover{background:rgba(255,255,255,0.12)!important}";
+    document.head.appendChild(s);
+  }, []);
+  if (preset === undefined || enabled === false) return null;
+  const option = options.find((entry) => entry.id === preset);
+  const text = option === undefined ? undefined : presetDisplayText(option, t);
+  const currentName = text?.name ?? preset;
+  const switchTo = (id) => {
+    fetch("/preset-switch/api/switch", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sessionId, preset: id })
+    }).then((r) => r.json()).then((r) => {
+      if (r?.ok) location.reload();
+      else alert(r?.error || "切换失败");
+    }).catch((err) => alert("切换失败: " + err));
+  };
+  return react.createElement("details", { style: { position: "relative", display: "inline-block" } },
+    react.createElement("summary", {
+      className: "psd-summary",
+      style: { display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.04)", color: "var(--theme-text, #ddd)", border: "none", cursor: "pointer", font: "inherit", fontSize: 13, padding: "5px 10px", borderRadius: 999, listStyle: "none", outline: "none", transition: "background .15s" }
+    },
+      react.createElement(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, { size: 14, className: AgentPresetLabel_module_css_default.icon, style: { opacity: 0.9 } }),
+      react.createElement("span", null, currentName),
+      react.createElement("svg", { width: 10, height: 6, viewBox: "0 0 10 6", style: { marginLeft: 2, flex: "none", opacity: 0.9 } },
+        react.createElement("path", { d: "M1 1 L5 5 L9 1", stroke: "currentColor", strokeWidth: 1.5, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" })
+      )
+    ),
+    react.createElement("div", { style: { position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 10000, minWidth: 180, maxWidth: 280, background: "var(--theme-bg-layer-2, #242428)", border: "1px solid var(--theme-border, #3a3a3f)", borderRadius: 10, padding: 4, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" } },
+      options.map((entry) => {
+        const entryText = presetDisplayText(entry, t);
+        const active = entry.id === preset;
+        return react.createElement("button", {
+          key: entry.id,
+          className: "psd-menu-item",
+          style: { display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", textAlign: "left", padding: "7px 10px", borderRadius: 7, background: active ? "rgba(74,158,255,0.14)" : "transparent", color: "var(--theme-text, #ddd)", border: "none", cursor: "pointer", font: "inherit", fontSize: 13, gap: 8, transition: "background .15s" },
+          onClick: () => switchTo(entry.id)
+        },
+          react.createElement("span", null, entryText.name ?? entry.id),
+          active ? react.createElement("span", { style: { fontSize: 13, opacity: 0.9 } }, "✓") : null
+        );
+      })
+    )
+  );
+}
 		//#endregion
 		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-agent-preset/src/client/AgentPresetSeat.module.css.mjs
-		const css$1 = ".cubgiG_seat{max-width:min(100%,240px);min-height:28px;color:var(--dsw-alias-label-primary);white-space:nowrap;text-overflow:ellipsis;cursor:pointer;background:0 0;border:none;border-radius:16px;align-items:center;gap:4px;padding:0 8px;font-size:13px;font-weight:500;line-height:20px;display:inline-flex;overflow:hidden}.cubgiG_seat:not(:disabled):hover,.cubgiG_seat[aria-expanded=true]{background:var(--dsw-alias-interactive-bg-hover)}.cubgiG_seat:disabled{cursor:default;color:var(--dsw-alias-label-quaternary)}.cubgiG_seatIcon{color:var(--dsw-alias-label-primary);flex:none}.cubgiG_introIcon{animation:.15s cubic-bezier(.16,1,.3,1) both cubgiG_seat-icon-in}@keyframes cubgiG_seat-icon-in{0%{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}.cubgiG_introText{white-space:pre;display:inline-block}.cubgiG_introChar{white-space:pre;opacity:0;animation:.4s ease-out forwards cubgiG_seat-char-in;display:inline-block}@keyframes cubgiG_seat-char-in{0%{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.cubgiG_introIcon,.cubgiG_introChar{opacity:1;animation:none}}.cubgiG_chevron{color:var(--dsw-alias-label-caption);flex:none}.cubgiG_item{flex-direction:column;gap:2px;max-width:280px;display:flex}.cubgiG_itemName{color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}.cubgiG_itemDesc{color:var(--dsw-alias-label-caption);white-space:normal;font-size:12px;line-height:16px}";
+		const css$1 = ".cubgiG_menuAnchor{min-width:54px;max-width:100%}.cubgiG_seat{min-width:0;max-width:min(100%,240px);min-height:28px;color:var(--dsw-alias-label-primary);white-space:nowrap;cursor:pointer;background:0 0;border:none;border-radius:16px;align-items:center;gap:4px;padding:0 8px;font-size:13px;font-weight:500;line-height:20px;display:inline-flex}.cubgiG_seat:not(:disabled):hover,.cubgiG_seat[aria-expanded=true]{background:var(--dsw-alias-interactive-bg-hover)}.cubgiG_seat:disabled{cursor:default;color:var(--dsw-alias-label-quaternary)}.cubgiG_seatIcon{color:var(--dsw-alias-label-primary);flex:none}.cubgiG_seatLabel{text-overflow:ellipsis;white-space:nowrap;min-width:0;overflow:hidden}.cubgiG_introIcon{animation:.15s cubic-bezier(.16,1,.3,1) both cubgiG_seat-icon-in}@keyframes cubgiG_seat-icon-in{0%{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}.cubgiG_introText{white-space:pre;display:inline-block}.cubgiG_introChar{white-space:pre;opacity:0;animation:.4s ease-out forwards cubgiG_seat-char-in;display:inline-block}@keyframes cubgiG_seat-char-in{0%{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.cubgiG_introIcon,.cubgiG_introChar{opacity:1;animation:none}}.cubgiG_chevron{color:var(--dsw-alias-label-caption);flex:none}.cubgiG_item{flex-direction:column;gap:2px;max-width:280px;display:flex}.cubgiG_itemName{color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}.cubgiG_itemDesc{color:var(--dsw-alias-label-caption);white-space:normal;font-size:12px;line-height:16px}";
 		const tagId$1 = "@deepseek-ai/dsh-client-ui-agent-preset/AgentPresetSeat.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$1) + "]") === null) {
 			const tag = document.createElement("style");
@@ -343,17 +270,19 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var AgentPresetSeat_module_css_default = {
-			"introChar": "cubgiG_introChar",
 			"chevron": "cubgiG_chevron",
-			"seat": "cubgiG_seat",
-			"seat-icon-in": "cubgiG_seat-icon-in",
-			"item": "cubgiG_item",
-			"seat-char-in": "cubgiG_seat-char-in",
+			"introChar": "cubgiG_introChar",
 			"introIcon": "cubgiG_introIcon",
-			"itemDesc": "cubgiG_itemDesc",
-			"seatIcon": "cubgiG_seatIcon",
 			"introText": "cubgiG_introText",
-			"itemName": "cubgiG_itemName"
+			"item": "cubgiG_item",
+			"itemDesc": "cubgiG_itemDesc",
+			"itemName": "cubgiG_itemName",
+			"menuAnchor": "cubgiG_menuAnchor",
+			"seat": "cubgiG_seat",
+			"seat-char-in": "cubgiG_seat-char-in",
+			"seat-icon-in": "cubgiG_seat-icon-in",
+			"seatIcon": "cubgiG_seatIcon",
+			"seatLabel": "cubgiG_seatLabel"
 		};
 		//#endregion
 		//#region lib/types/client/AgentPresetSeat.js
@@ -375,6 +304,17 @@ window.__ModuleLoader__.load({
 		const INTRO_TEXT_REVEAL_MS = 200;
 		const INTRO_CHAR_FADE_MS = 400;
 		/**
+		* How long a refused switch holds before fading.
+		*
+		* Longer than the primitive's default because this banner is the only place
+		* the refusal appears. The chip's label has already snapped back to the
+		* preset the session still runs, and a preset the host refuses to MOUNT is
+		* one discovery reported healthy — its row on the settings page carries no
+		* reason to go back and read, because there was nothing to see until the
+		* rows actually ran.
+		*/
+		const REFUSAL_HOLD_MS = 8e3;
+		/**
 		* Per-character start offset for the introduce reveal.
 		* @param count - character count of the shown preset name.
 		* @returns milliseconds between successive character starts.
@@ -391,6 +331,8 @@ window.__ModuleLoader__.load({
 		function AgentPresetSeat({ load, select, introduced, useAgentPresetSeat, t }) {
 			const state = useAgentPresetSeat((snapshot) => snapshot);
 			const [open, setOpen] = (0, react.useState)(false);
+			const toastSeq = (0, react.useRef)(0);
+			const [toast, setToast] = (0, react.useState)(null);
 			(0, react.useEffect)(() => {
 				load();
 			}, [load]);
@@ -430,7 +372,7 @@ window.__ModuleLoader__.load({
 					children: character
 				}, index))
 			}) : label;
-			return (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Menu, {
+			return (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Menu, {
 				open,
 				onClose: () => {
 					setOpen(false);
@@ -454,10 +396,24 @@ window.__ModuleLoader__.load({
 				selectedId: state.current,
 				onSelect: (id) => {
 					setOpen(false);
-					select(id);
+					const picked = state.options.find((option) => option.id === id);
+					/* v8 ignore next */
+					const name = picked === void 0 ? id : presetDisplayText(picked, t).name;
+					select(id).then((refusal) => {
+						if (refusal === void 0) return;
+						toastSeq.current += 1;
+						setToast({
+							seq: toastSeq.current,
+							text: t("switchRefused", {
+								name,
+								reason: refusal
+							})
+						});
+					});
 				},
 				align: "start",
 				portal: true,
+				className: AgentPresetSeat_module_css_default.menuAnchor,
 				anchor: (0, react_jsx_runtime.jsxs)("button", {
 					type: "button",
 					className: AgentPresetSeat_module_css_default.seat,
@@ -470,82 +426,71 @@ window.__ModuleLoader__.load({
 					},
 					children: [
 						(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, { className: introducing ? `${AgentPresetSeat_module_css_default.seatIcon} ${AgentPresetSeat_module_css_default.introIcon}` : AgentPresetSeat_module_css_default.seatIcon }),
-						shownLabel,
+						(0, react_jsx_runtime.jsx)("span", {
+							className: AgentPresetSeat_module_css_default.seatLabel,
+							children: shownLabel
+						}),
 						(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconChevronDownOutline14, { className: AgentPresetSeat_module_css_default.chevron })
 					]
 				})
-			});
+			}), toast !== null && (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Toast, {
+				text: toast.text,
+				icon: (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconWarningOutline16, {}),
+				holdMs: REFUSAL_HOLD_MS,
+				anchor: document.querySelector("[data-composer-card]"),
+				onDone: () => {
+					setToast(null);
+				}
+			}, toast.seq)] });
 		}
 		//#endregion
 		//#region lib/types/client/settings-store.js
 		/**
-		* Agent-preset default-settings controller.
+		* Agent-preset roster store shared by the display surfaces.
 		*
-		* Options and the current default both come from one `agentPreset.list` call:
-		* the roster already reports which id a session with no explicit choice gets,
-		* so the row needs no schema introspection. Writes target the settings
-		* namespace's `default` field, which is what the host resolves at creation.
+		* Options come from one `agentPresets.list` call. Writes target the settings
+		* namespace's `default` field, which is what the host resolves at creation;
+		* the management section is the surface that writes it.
 		*/
 		/** The agent-preset settings namespace on the host wire. */
 		const AGENT_PRESET_SETTINGS_NS = "agent-presets";
 		/**
-		* Human text for a rejected wire call. A transport failure rejects with an
-		* Error; a host or a runtime can reject with anything, and the surface still
-		* has to say something.
-		* @param error - the rejection value.
-		* @returns the message to show.
-		*/
-		function messageOf(error) {
-			return error instanceof Error ? error.message : String(error);
-		}
-		/**
 		* Persist one preset as the default for sessions created later.
 		*
-		* The default is a settings field rather than a preset property, so both the
-		* General row and the management section write it here — one home for which
-		* namespace and field the host resolves at session creation.
-		* @param api - the settings wire face.
+		* The default is a settings field rather than a preset property; the
+		* management section writes it here — one home for which namespace and field
+		* the host resolves at session creation.
+		* @param ctx - the browser plugin context carrying the Remote namespaces.
 		* @param id - the preset to make default.
 		* @returns the failure message, or undefined once the write landed.
 		*/
-		async function writeDefaultPreset(api, id) {
-			let response;
-			try {
-				response = await api.settings.update({
-					ns: AGENT_PRESET_SETTINGS_NS,
-					patch: { default: id }
-				});
-			} catch (error) {
-				return messageOf(error);
-			}
-			return response.result.ok ? void 0 : response.result.error.message;
+		async function writeDefaultPreset(ctx, id) {
+			const response = await ctx.remote.settings.update(AGENT_PRESET_SETTINGS_NS, { default: id }, void 0);
+			return response.ok ? void 0 : response.error.message;
 		}
+		const EMPTY_ROSTER = {
+			presets: [],
+			authorable: false
+		};
 		/**
-		* Read the roster, folding both refusal shapes into one message.
-		*
-		* The wire refuses in two ways — the transport rejects, or it answers an
-		* `ok: false` envelope — and every surface treats them identically. Folding
-		* them here keeps each store's `load` about what it does with a roster rather
-		* than about how the call can fail.
-		* @param api - the agent-preset wire face.
+		* Read the roster, turning a refusal into the message every surface shows.
+		* @param ctx - the browser plugin context carrying the Remote namespaces.
 		* @returns the roster, or the message to show in its place.
 		*/
-		async function readRoster(api) {
-			try {
-				const response = await api.agentPresets.list({});
-				return response.result.ok ? {
-					ok: true,
-					value: response.result.value
-				} : {
-					ok: false,
-					error: response.result.error.message
-				};
-			} catch (error) {
-				return {
-					ok: false,
-					error: messageOf(error)
-				};
-			}
+		async function readRoster(ctx) {
+			const result = await ctx.remote.agentPresets.list();
+			if (result.ok) return {
+				ok: true,
+				value: result.value
+			};
+			if (result.error.code === "gateway/invocation-unavailable") return {
+				ok: true,
+				value: EMPTY_ROSTER
+			};
+			return {
+				ok: false,
+				error: result.error.message
+			};
 		}
 		/**
 		* The opening move every roster-backed surface makes: refuse a read that is
@@ -554,11 +499,11 @@ window.__ModuleLoader__.load({
 		* A surface that gets `undefined` returns without touching its snapshot
 		* further — either another read owns it, or this one already wrote the
 		* failure. What differs between surfaces starts after this.
-		* @param api - the agent-preset wire face.
+		* @param ctx - the browser plugin context carrying the Remote namespaces.
 		* @param store - the surface's own snapshot store.
 		* @returns the roster, or undefined when the caller should return.
 		*/
-		async function beginRosterRead(api, store) {
+		async function beginRosterRead(ctx, store) {
 			const before = store.getSnapshot();
 			if (before.status === "loading") return void 0;
 			store.set({
@@ -566,7 +511,7 @@ window.__ModuleLoader__.load({
 				status: "loading",
 				error: null
 			});
-			const roster = await readRoster(api);
+			const roster = await readRoster(ctx);
 			if (roster.ok) return roster.value;
 			store.set({
 				...store.getSnapshot(),
@@ -577,14 +522,14 @@ window.__ModuleLoader__.load({
 		/**
 		* The roster entries as the pickers render them: healthy presets only.
 		*
-		* The chip and the row exist to choose the NEXT session's composition, and a
-		* broken preset cannot compose one — offering it would defer the discovery
-		* of that fact to a failed session start. The management section renders the
-		* full roster (broken rows included) from its own store instead.
+		* The chip exists to choose the NEXT session's composition, and a broken
+		* preset cannot compose one — offering it would defer the discovery of that
+		* fact to a failed session start. The management section renders the full
+		* roster (broken rows included) from its own store instead.
 		*
-		* The chip, the row, and the management section all show the same facts, and
-		* `exactOptionalPropertyTypes` makes "absent" and "present as undefined"
-		* different shapes — so the spread dance belongs in one place rather than
+		* The chip, the header label, and the management section all show the same
+		* facts, and `exactOptionalPropertyTypes` makes "absent" and "present as
+		* undefined" different shapes — so the spread dance belongs in one place rather than
 		* once per store.
 		* @param presets - the roster the host answered with.
 		* @returns one option per selectable preset, in roster order.
@@ -600,17 +545,18 @@ window.__ModuleLoader__.load({
 		const INITIAL$2 = {
 			status: "idle",
 			error: null,
-			writable: true,
-			currentValue: "",
 			options: []
 		};
-		/** Reads the roster and persists the chosen default. */
+		/** Reads the roster for the surfaces that only display it. */
 		var AgentPresetSettingsController = class {
-			api;
-			/** Row snapshot the renderer subscribes to. */
-			store = (0, _deepseek_ai_dsh_client_runtime_client.createSnapshotStore)(INITIAL$2);
-			constructor(api) {
-				this.api = api;
+			ctx;
+			/** Roster snapshot the renderer subscribes to. */
+			store = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)(INITIAL$2);
+			/**
+			* @param ctx - the browser plugin context (the roster read).
+			*/
+			constructor(ctx) {
+				this.ctx = ctx;
 			}
 			set(patch) {
 				this.store.set({
@@ -620,64 +566,26 @@ window.__ModuleLoader__.load({
 			}
 			/**
 			* Load the roster. An empty roster means the deployment composes no
-			* presets, which is a valid deployment rather than a failure — the row
-			* reports `unavailable` and renders nothing.
+			* presets, which is a valid deployment rather than a failure — the
+			* surfaces report `unavailable` and render nothing.
 			* @returns once the snapshot reflects the host.
 			*/
 			async load() {
-				const roster = await beginRosterRead(this.api, this.store);
+				const roster = await beginRosterRead(this.ctx, this.store);
 				if (roster === void 0) return;
 				const { presets } = roster;
-				const [first] = presets;
-				if (first === void 0) {
+				if (presets.length === 0) {
 					this.set({
 						status: "unavailable",
-						options: [],
-						currentValue: ""
+						options: []
 					});
 					return;
 				}
-				try {
-					const described = await this.api.settings.describe({});
-					this.set({
-						status: "ready",
-						error: null,
-						writable: described.result.ok && described.result.value.writable,
-						options: presetOptions(presets),
-						currentValue: presets.find((preset) => preset.isDefault)?.id ?? first.id
-					});
-				} catch (error) {
-					this.set({
-						status: "error",
-						error: messageOf(error)
-					});
-				}
-			}
-			/**
-			* Persist one preset as the default for sessions created later. Running
-			* sessions keep the composition they were created with, so this never
-			* disturbs work in progress.
-			* @param id - the preset to make default.
-			* @returns once the write settled and the roster was re-read.
-			*/
-			async select(id) {
-				const before = this.store.getSnapshot();
-				if (before.status === "saving" || id === before.currentValue) return;
 				this.set({
-					status: "saving",
+					status: "ready",
 					error: null,
-					currentValue: id
+					options: presetOptions(presets)
 				});
-				const failure = await writeDefaultPreset(this.api, id);
-				if (failure !== void 0) {
-					this.set({
-						status: "ready",
-						currentValue: before.currentValue,
-						error: failure
-					});
-					return;
-				}
-				await this.load();
 			}
 		};
 		//#endregion
@@ -726,12 +634,12 @@ window.__ModuleLoader__.load({
 		}
 		/** Reads the roster and drives the copy dialog, viewer, and location reveals. */
 		var AgentPresetSectionController = class {
-			api;
+			ctx;
 			rosterChanged;
 			/** Page snapshot the renderer subscribes to. */
-			store = (0, _deepseek_ai_dsh_client_runtime_client.createSnapshotStore)(INITIAL$1);
-			constructor(api, rosterChanged = () => {}) {
-				this.api = api;
+			store = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)(INITIAL$1);
+			constructor(ctx, rosterChanged = () => {}) {
+				this.ctx = ctx;
 				this.rosterChanged = rosterChanged;
 			}
 			set(patch) {
@@ -755,9 +663,12 @@ window.__ModuleLoader__.load({
 			* @returns once the snapshot reflects the host.
 			*/
 			async load() {
-				const roster = await beginRosterRead(this.api, this.store);
+				const opener = this.ctx.remote.settings.canOpenAgentPresetDirectory();
+				const roster = await beginRosterRead(this.ctx, this.store);
+				const described = await opener;
 				if (roster === void 0) return;
-				const { presets, authorable, hasDocument } = roster;
+				const { presets, authorable } = roster;
+				const hasDocument = described.ok && described.value;
 				if (presets.length === 0) {
 					this.set({
 						status: "unavailable",
@@ -787,21 +698,17 @@ window.__ModuleLoader__.load({
 			*/
 			async view(id) {
 				this.set({ error: null });
-				try {
-					const response = await this.api.agentPresets.read({ agentPreset: id });
-					if (!response.result.ok) {
-						this.set({ error: response.result.error.message });
-						return;
-					}
-					const { name, content } = response.result.value;
-					this.set({ view: {
-						id,
-						title: name ?? id,
-						content
-					} });
-				} catch (error) {
-					this.set({ error: messageOf(error) });
+				const result = await this.ctx.remote.agentPresets.read(id);
+				if (!result.ok) {
+					this.set({ error: result.error.message });
+					return;
 				}
+				const { name, content } = result.value;
+				this.set({ view: {
+					id,
+					title: name ?? id,
+					content
+				} });
 			}
 			/** Close the read-only viewer. */
 			closeView() {
@@ -863,30 +770,19 @@ window.__ModuleLoader__.load({
 					saving: true,
 					error: null
 				});
-				try {
-					const name = draft.name.trim();
-					const response = await this.api.agentPresets.copy({
-						from: draft.from,
-						agentPreset: draft.id,
-						...name === "" ? {} : { name }
-					});
-					if (!response.result.ok) {
-						this.patchCopy({
-							saving: false,
-							error: response.result.error.message
-						});
-						return;
-					}
-					this.set({ copy: null });
-					await this.load();
-					this.rosterChanged();
-					await this.openLocation(draft.id);
-				} catch (error) {
+				const name = draft.name.trim();
+				const result = await this.ctx.remote.agentPresets.copy(draft.from, draft.id, name === "" ? void 0 : name);
+				if (!result.ok) {
 					this.patchCopy({
 						saving: false,
-						error: messageOf(error)
+						error: result.error.message
 					});
+					return;
 				}
+				this.set({ copy: null });
+				await this.load();
+				this.rosterChanged();
+				await this.openLocation(draft.id);
 			}
 			/**
 			* Open one preset's directory on the host desktop, or reveal its path on
@@ -895,21 +791,17 @@ window.__ModuleLoader__.load({
 			* @returns once the host answered and the page reflects it.
 			*/
 			async openLocation(id) {
-				try {
-					const response = await this.api.agentPresets.openDocument({ agentPreset: id });
-					if (!response.result.ok) {
-						this.set({ error: response.result.error.message });
-						return;
-					}
-					if (response.result.value.opened) return;
-					const { path } = response.result.value;
-					this.set({ revealedPaths: {
-						...this.store.getSnapshot().revealedPaths,
-						[id]: path
-					} });
-				} catch (error) {
-					this.set({ error: messageOf(error) });
+				const result = await this.ctx.remote.settings.openAgentPresetDirectory(id);
+				if (!result.ok) {
+					this.set({ error: result.error.message });
+					return;
 				}
+				if (result.value.opened) return;
+				const { path } = result.value;
+				this.set({ revealedPaths: {
+					...this.store.getSnapshot().revealedPaths,
+					[id]: path
+				} });
 			}
 			/**
 			* Ask for confirmation before deleting one preset.
@@ -933,29 +825,21 @@ window.__ModuleLoader__.load({
 					deleting: true,
 					error: null
 				});
-				try {
-					const response = await this.api.agentPresets.remove({ agentPreset: pendingDelete });
-					if (!response.result.ok) {
-						this.set({
-							deleting: false,
-							pendingDelete: null,
-							error: response.result.error.message
-						});
-						return;
-					}
-					this.set({
-						deleting: false,
-						pendingDelete: null
-					});
-					await this.load();
-					this.rosterChanged();
-				} catch (error) {
+				const result = await this.ctx.remote.agentPresets.deletePreset(pendingDelete);
+				if (!result.ok) {
 					this.set({
 						deleting: false,
 						pendingDelete: null,
-						error: messageOf(error)
+						error: result.error.message
 					});
+					return;
 				}
+				this.set({
+					deleting: false,
+					pendingDelete: null
+				});
+				await this.load();
+				this.rosterChanged();
 			}
 			/**
 			* Make one preset the default for sessions created later. Running sessions
@@ -964,7 +848,7 @@ window.__ModuleLoader__.load({
 			* @returns once the write settled and the roster was re-read.
 			*/
 			async makeDefault(id) {
-				const failure = await writeDefaultPreset(this.api, id);
+				const failure = await writeDefaultPreset(this.ctx, id);
 				if (failure !== void 0) {
 					this.set({ error: failure });
 					return;
@@ -974,7 +858,7 @@ window.__ModuleLoader__.load({
 		};
 		//#endregion
 		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-agent-preset/src/client/AgentPresetSection.module.css.mjs
-		const css = ".rtSEdW_section{max-width:720px;color:var(--dsw-alias-label-primary);flex-direction:column;gap:12px;display:flex}.rtSEdW_title{margin:0;font-size:18px;font-weight:600}.rtSEdW_intro{color:var(--dsw-alias-label-tertiary);margin:0;font-size:13px}.rtSEdW_group{flex-direction:column;gap:10px;display:flex}.rtSEdW_group+.rtSEdW_group{margin-top:20px}.rtSEdW_groupHead{letter-spacing:.06em;text-transform:uppercase;color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;font-weight:600}.rtSEdW_cards{grid-template-columns:repeat(auto-fill,minmax(268px,1fr));grid-auto-rows:1fr;gap:12px;margin:0;padding:0;list-style:none;display:grid}.rtSEdW_card{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-3);border-radius:12px;flex-direction:column;transition:border-color .16s,background .16s;display:flex}.rtSEdW_card:hover:not(.rtSEdW_cardActive){border-color:var(--dsw-alias-label-dimmed)}.rtSEdW_cardActive{background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-label-primary)}.rtSEdW_cardBroken,.rtSEdW_cardBroken:hover{border-color:var(--dsw-alias-state-error-primary)}.rtSEdW_brokenBadge{white-space:nowrap;background:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-bg-layer-3);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.rtSEdW_cardBrokenReason{color:var(--dsw-alias-state-error-primary);overflow-wrap:anywhere;font-size:12px;line-height:1.5}.rtSEdW_cardMain{appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;background:0 0;border:0;border-radius:12px 12px 0 0;flex-direction:column;flex:1;gap:8px;padding:14px 16px 12px;display:flex}.rtSEdW_cardMain:disabled{cursor:default}.rtSEdW_cardMain:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}.rtSEdW_cardHead{align-items:center;gap:8px;display:flex}.rtSEdW_cardName{font-size:15px;font-weight:600;line-height:1.4}.rtSEdW_badge,.rtSEdW_inUse{white-space:nowrap;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.rtSEdW_badge{border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-tertiary)}.rtSEdW_inUse{background:var(--dsw-alias-label-primary);color:var(--dsw-alias-bg-layer-3);margin-left:auto}.rtSEdW_cardDesc{color:var(--dsw-alias-label-secondary);-webkit-line-clamp:4;overflow-wrap:anywhere;-webkit-box-orient:vertical;min-height:42px;font-size:13px;line-height:1.55;display:-webkit-box;overflow:hidden}.rtSEdW_cardId{font-family:var(--dsw-font-mono,ui-monospace, SFMono-Regular, Menlo, monospace);color:var(--dsw-alias-label-dimmed);margin-top:auto;font-size:11px}.rtSEdW_cardFoot{border-top:1px solid var(--dsw-alias-border-l2);justify-content:flex-end;gap:2px;padding:6px 10px;display:flex}.rtSEdW_iconButton{appearance:none;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:0;border-radius:7px;align-items:center;padding:6px;display:inline-flex;position:relative}.rtSEdW_iconButton:disabled{opacity:.4;cursor:default}.rtSEdW_iconButton:hover:not(:disabled){background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary)}.rtSEdW_iconButton:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-1px}.rtSEdW_iconButton:after{content:attr(data-tip);background:var(--dsw-alias-label-primary);color:var(--dsw-alias-bg-layer-3);white-space:nowrap;opacity:0;pointer-events:none;border-radius:6px;padding:3px 8px;font-size:11px;line-height:17px;transition:opacity .12s;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translate(-50%)}.rtSEdW_iconButton:hover:after,.rtSEdW_iconButton:focus-visible:after{opacity:1}.rtSEdW_iconDanger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--dsw-alias-state-error-primary)}.rtSEdW_revealedPath{color:var(--dsw-alias-label-tertiary);align-items:baseline;gap:6px;margin:0;padding:6px 16px 10px;font-size:11px;display:flex}.rtSEdW_revealedPath code{font-family:var(--dsw-font-mono,ui-monospace, SFMono-Regular, Menlo, monospace);color:var(--dsw-alias-label-secondary);user-select:all;overflow-wrap:anywhere}.rtSEdW_revealedPathLabel{white-space:nowrap}.rtSEdW_secondaryButton{color:var(--dsw-alias-label-secondary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:7px;padding:5px 8px;font-size:12.5px}.rtSEdW_secondaryButton:hover:not(:disabled){background:var(--dsw-alias-bg-layer-1)}.rtSEdW_secondaryButton:disabled{opacity:.5;cursor:default}.rtSEdW_field{flex-direction:column;gap:6px;display:flex}.rtSEdW_fieldLabel{color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:500}.rtSEdW_input{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);font:inherit;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border-radius:10px;padding:9px 12px;font-size:13px}.rtSEdW_input:focus{border-color:var(--dsw-alias-brand-primary);outline:none}.rtSEdW_input::placeholder{color:var(--dsw-alias-label-dimmed)}.rtSEdW_dialog{width:min(560px,100%)}.rtSEdW_dialogFields{flex-direction:column;gap:12px;display:flex}.rtSEdW_viewerCode{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);max-height:min(52vh,480px);color:var(--dsw-alias-label-secondary);font-family:var(--dsw-font-mono,ui-monospace, SFMono-Regular, Menlo, monospace);white-space:pre;tab-size:2;--dsh-scrollbar-thumb:var(--dsw-alias-scrollbar-bg-l2);--dsh-scrollbar-thumb-hover:var(--dsw-alias-scrollbar-hover-l2);border-radius:10px;margin:0;padding:12px;font-size:12.5px;line-height:1.5;overflow:auto}.rtSEdW_error{color:var(--dsw-alias-state-error-primary);margin:0;font-size:12px}.rtSEdW_deleteDialog{width:min(480px,100%)}.rtSEdW_deleteConfirm:not(:disabled){border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}.rtSEdW_deleteConfirm:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.rtSEdW_creatorButton{box-sizing:border-box;border:1px dashed var(--dsw-alias-border-l3);height:44px;font:inherit;color:var(--dsw-alias-label-primary);cursor:pointer;background:0 0;border-radius:12px;justify-content:center;align-self:stretch;align-items:center;gap:6px;font-size:14px;line-height:22px;display:flex}.rtSEdW_creatorButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.rtSEdW_creatorButton:disabled{opacity:.4;cursor:default}";
+		const css = ".rtSEdW_section{max-width:720px;color:var(--dsw-alias-label-primary);flex-direction:column;gap:12px;display:flex}.rtSEdW_title{margin:0;font-size:18px;font-weight:600}.rtSEdW_intro{color:var(--dsw-alias-label-tertiary);margin:0;font-size:13px}.rtSEdW_group{flex-direction:column;gap:10px;display:flex}.rtSEdW_group+.rtSEdW_group{margin-top:20px}.rtSEdW_groupHead{letter-spacing:.06em;text-transform:uppercase;color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;font-weight:600}.rtSEdW_cards{grid-template-columns:repeat(auto-fill,minmax(268px,1fr));grid-auto-rows:1fr;gap:12px;margin:0;padding:0;list-style:none;display:grid}.rtSEdW_card{border:.5px solid var(--dsw-alias-border-l4);background:0 0;border-radius:20px;flex-direction:column;transition:border-color .16s,background .16s;display:flex}.rtSEdW_card:hover:not(.rtSEdW_cardActive){background:var(--dsw-alias-interactive-bg-hover)}.rtSEdW_cardActive{background:var(--dsw-alias-bg-module-platform);border-color:var(--dsw-static-neutral-bluish-400)}.rtSEdW_cardBroken,.rtSEdW_cardBroken:hover{border-color:var(--dsw-alias-state-error-primary)}.rtSEdW_brokenBadge{corner-shape:round;white-space:nowrap;background:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-bg-layer-3);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.rtSEdW_brokenTip{z-index:1;background:var(--dsw-alias-label-primary);width:max-content;max-width:100%;color:var(--dsw-alias-bg-layer-3);text-align:left;white-space:pre-line;overflow-wrap:anywhere;opacity:0;pointer-events:none;border-radius:6px;padding:6px 8px;font-size:11px;font-weight:400;line-height:1.5;transition:opacity .12s;position:absolute;top:calc(100% + 6px);left:0}.rtSEdW_brokenBadge:hover .rtSEdW_brokenTip,.rtSEdW_cardMain:focus-visible .rtSEdW_brokenTip{opacity:1}.rtSEdW_cardMain[aria-disabled=true]{cursor:default}.rtSEdW_cardBrokenReason{clip:rect(0 0 0 0);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}.rtSEdW_cardMain{appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;background:0 0;border:0;border-radius:12px 12px 0 0;flex-direction:column;flex:1;gap:8px;padding:14px 16px 12px;display:flex}.rtSEdW_cardMain:disabled{cursor:default}.rtSEdW_cardMain:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}.rtSEdW_cardHead{align-items:center;gap:8px;display:flex;position:relative}.rtSEdW_cardName{font-size:15px;font-weight:600;line-height:1.4}.rtSEdW_inUse{margin-left:auto}.rtSEdW_cardDesc{color:var(--dsw-alias-label-secondary);-webkit-line-clamp:4;overflow-wrap:anywhere;-webkit-box-orient:vertical;min-height:42px;font-size:13px;line-height:1.55;display:-webkit-box;overflow:hidden}.rtSEdW_cardId{font-family:var(--dsw-font-mono,ui-monospace, SFMono-Regular, Menlo, monospace);color:var(--dsw-alias-label-tertiary);margin-top:auto;font-size:11px}.rtSEdW_cardFoot{border-top:.5px solid var(--dsw-alias-border-l2);justify-content:flex-end;gap:2px;padding:6px 10px;display:flex}.rtSEdW_iconButton{appearance:none;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:0;border-radius:7px;align-items:center;padding:6px;display:inline-flex;position:relative}.rtSEdW_iconButton:disabled{opacity:.4;cursor:default}.rtSEdW_iconButton:hover:not(:disabled){background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary)}.rtSEdW_iconButton:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-1px}.rtSEdW_iconButton:after{content:attr(data-tip);background:var(--dsw-alias-label-primary);color:var(--dsw-alias-bg-layer-3);white-space:nowrap;opacity:0;pointer-events:none;border-radius:6px;padding:3px 8px;font-size:11px;line-height:17px;transition:opacity .12s;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translate(-50%)}.rtSEdW_iconButton:hover:after,.rtSEdW_iconButton:focus-visible:after{opacity:1}.rtSEdW_iconDanger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--dsw-alias-state-error-primary)}.rtSEdW_revealedPath{color:var(--dsw-alias-label-tertiary);align-items:baseline;gap:6px;margin:0;padding:6px 16px 10px;font-size:11px;display:flex}.rtSEdW_revealedPath code{font-family:var(--dsw-font-mono,ui-monospace, SFMono-Regular, Menlo, monospace);color:var(--dsw-alias-label-secondary);user-select:all;overflow-wrap:anywhere}.rtSEdW_revealedPathLabel{white-space:nowrap}.rtSEdW_secondaryButton{color:var(--dsw-alias-label-secondary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:7px;padding:5px 8px;font-size:12.5px}.rtSEdW_secondaryButton:hover:not(:disabled){background:var(--dsw-alias-bg-layer-1)}.rtSEdW_secondaryButton:disabled{opacity:.5;cursor:default}.rtSEdW_field{flex-direction:column;gap:6px;display:flex}.rtSEdW_fieldLabel{color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:500}.rtSEdW_input{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l4);font:inherit;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border-radius:10px;padding:9px 12px;font-size:13px}.rtSEdW_input:focus{border-color:var(--dsw-alias-brand-primary);outline:none}.rtSEdW_input::placeholder{color:var(--dsw-alias-label-dimmed)}.rtSEdW_dialog{width:min(560px,100%)}.rtSEdW_dialogFields{flex-direction:column;gap:12px;display:flex}.rtSEdW_viewerCode{border:.5px solid var(--dsw-alias-border-l4);background:var(--dsw-alias-bg-layer-2);max-height:min(52vh,480px);color:var(--dsw-alias-label-secondary);font-family:var(--dsw-font-mono,ui-monospace, SFMono-Regular, Menlo, monospace);white-space:pre;tab-size:2;--dsh-scrollbar-thumb:var(--dsw-alias-scrollbar-bg-l2);--dsh-scrollbar-thumb-hover:var(--dsw-alias-scrollbar-hover-l2);border-radius:10px;margin:0;padding:12px;font-size:12.5px;line-height:1.5;overflow:auto}.rtSEdW_error{color:var(--dsw-alias-state-error-primary);margin:0;font-size:12px}.rtSEdW_deleteDialog{width:min(480px,100%)}.rtSEdW_deleteConfirm:not(:disabled){border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}.rtSEdW_deleteConfirm:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.rtSEdW_creatorButton{box-sizing:border-box;border:1px dashed var(--dsw-alias-border-l3);height:44px;font:inherit;color:var(--dsw-alias-label-primary);cursor:pointer;background:0 0;border-radius:20px;justify-content:center;align-self:stretch;align-items:center;gap:6px;font-size:14px;line-height:22px;display:flex}.rtSEdW_creatorButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.rtSEdW_creatorButton:disabled{opacity:.4;cursor:default}";
 		const tagId = "@deepseek-ai/dsh-client-ui-agent-preset/AgentPresetSection.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -984,40 +868,40 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var AgentPresetSection_module_css_default = {
-			"cardMain": "rtSEdW_cardMain",
-			"field": "rtSEdW_field",
-			"cardDesc": "rtSEdW_cardDesc",
-			"dialog": "rtSEdW_dialog",
-			"cardActive": "rtSEdW_cardActive",
-			"title": "rtSEdW_title",
-			"group": "rtSEdW_group",
-			"cards": "rtSEdW_cards",
-			"viewerCode": "rtSEdW_viewerCode",
-			"deleteConfirm": "rtSEdW_deleteConfirm",
-			"inUse": "rtSEdW_inUse",
-			"cardId": "rtSEdW_cardId",
-			"revealedPathLabel": "rtSEdW_revealedPathLabel",
-			"deleteDialog": "rtSEdW_deleteDialog",
-			"cardHead": "rtSEdW_cardHead",
-			"secondaryButton": "rtSEdW_secondaryButton",
-			"card": "rtSEdW_card",
 			"brokenBadge": "rtSEdW_brokenBadge",
-			"cardBrokenReason": "rtSEdW_cardBrokenReason",
-			"iconDanger": "rtSEdW_iconDanger",
-			"cardName": "rtSEdW_cardName",
-			"iconButton": "rtSEdW_iconButton",
-			"fieldLabel": "rtSEdW_fieldLabel",
-			"input": "rtSEdW_input",
-			"error": "rtSEdW_error",
-			"badge": "rtSEdW_badge",
+			"brokenTip": "rtSEdW_brokenTip",
+			"card": "rtSEdW_card",
+			"cardActive": "rtSEdW_cardActive",
 			"cardBroken": "rtSEdW_cardBroken",
-			"intro": "rtSEdW_intro",
+			"cardBrokenReason": "rtSEdW_cardBrokenReason",
+			"cardDesc": "rtSEdW_cardDesc",
 			"cardFoot": "rtSEdW_cardFoot",
+			"cardHead": "rtSEdW_cardHead",
+			"cardId": "rtSEdW_cardId",
+			"cardMain": "rtSEdW_cardMain",
+			"cardName": "rtSEdW_cardName",
+			"cards": "rtSEdW_cards",
 			"creatorButton": "rtSEdW_creatorButton",
-			"groupHead": "rtSEdW_groupHead",
+			"deleteConfirm": "rtSEdW_deleteConfirm",
+			"deleteDialog": "rtSEdW_deleteDialog",
+			"dialog": "rtSEdW_dialog",
 			"dialogFields": "rtSEdW_dialogFields",
+			"error": "rtSEdW_error",
+			"field": "rtSEdW_field",
+			"fieldLabel": "rtSEdW_fieldLabel",
+			"group": "rtSEdW_group",
+			"groupHead": "rtSEdW_groupHead",
+			"iconButton": "rtSEdW_iconButton",
+			"iconDanger": "rtSEdW_iconDanger",
+			"inUse": "rtSEdW_inUse",
+			"input": "rtSEdW_input",
+			"intro": "rtSEdW_intro",
+			"revealedPath": "rtSEdW_revealedPath",
+			"revealedPathLabel": "rtSEdW_revealedPathLabel",
+			"secondaryButton": "rtSEdW_secondaryButton",
 			"section": "rtSEdW_section",
-			"revealedPath": "rtSEdW_revealedPath"
+			"title": "rtSEdW_title",
+			"viewerCode": "rtSEdW_viewerCode"
 		};
 		//#endregion
 		//#region lib/types/client/AgentPresetSection.js
@@ -1227,10 +1111,12 @@ window.__ModuleLoader__.load({
 												type: "button",
 												className: AgentPresetSection_module_css_default.cardMain,
 												"aria-pressed": row.isDefault,
-												disabled: row.isDefault || row.broken !== void 0,
+												disabled: row.isDefault,
+												"aria-disabled": row.broken !== void 0,
 												"aria-label": `${row.broken !== void 0 ? t("brokenBadge") : row.isDefault ? t("inUse") : t("setDefault")}: ${text.name}`,
-												title: row.broken ?? (row.isDefault ? t("inUse") : t("setDefault")),
+												title: row.broken !== void 0 ? t("brokenBadge") : row.isDefault ? t("inUse") : t("setDefault"),
 												onClick: () => {
+													if (row.broken !== void 0) return;
 													props.makeDefault(row.id);
 												},
 												children: [
@@ -1241,15 +1127,17 @@ window.__ModuleLoader__.load({
 																className: AgentPresetSection_module_css_default.cardName,
 																children: text.name
 															}),
-															row.broken !== void 0 ? (0, react_jsx_runtime.jsx)("span", {
+															row.broken !== void 0 ? (0, react_jsx_runtime.jsxs)("span", {
 																className: AgentPresetSection_module_css_default.brokenBadge,
-																children: t("brokenBadge")
+																children: [t("brokenBadge"), (0, react_jsx_runtime.jsx)("span", {
+																	className: AgentPresetSection_module_css_default.brokenTip,
+																	"aria-hidden": "true",
+																	children: row.broken
+																})]
 															}) : null,
-															(0, react_jsx_runtime.jsx)("span", {
-																className: AgentPresetSection_module_css_default.badge,
-																children: row.trust === "user" ? t("userTrust") : t("builtIn")
-															}),
-															row.isDefault ? (0, react_jsx_runtime.jsx)("span", {
+															(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Tag, { children: row.trust === "user" ? t("userTrust") : t("builtIn") }),
+															row.isDefault ? (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Tag, {
+																tone: "solid",
 																className: AgentPresetSection_module_css_default.inUse,
 																children: t("inUse")
 															}) : null
@@ -1410,11 +1298,10 @@ window.__ModuleLoader__.load({
 		};
 		/** Stages the next session's preset and applies it when one appears. */
 		var AgentPresetSeatController = class {
-			api;
+			ctx;
 			currentSession;
-			onApplied;
 			/** Chip snapshot the renderer subscribes to. */
-			store = (0, _deepseek_ai_dsh_client_runtime_client.createSnapshotStore)(INITIAL);
+			store = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)(INITIAL);
 			/**
 			* The deployment default, so a consumed stage can fall back to it without
 			* re-reading the roster.
@@ -1422,10 +1309,9 @@ window.__ModuleLoader__.load({
 			fallback = "";
 			/** Set while a pick is waiting for a session; cleared once applied. */
 			staged;
-			constructor(api, currentSession, onApplied) {
-				this.api = api;
+			constructor(ctx, currentSession) {
+				this.ctx = ctx;
 				this.currentSession = currentSession;
-				this.onApplied = onApplied;
 			}
 			set(patch) {
 				this.store.set({
@@ -1438,33 +1324,37 @@ window.__ModuleLoader__.load({
 			* @returns once the snapshot reflects the host.
 			*/
 			async load() {
-				try {
-					const response = await this.api.agentPresets.list({});
-					if (!response.result.ok) {
-						this.set({ error: response.result.error.message });
-						return;
-					}
-					const { presets } = response.result.value;
-					this.fallback = presets.find((preset) => preset.isDefault)?.id ?? presets[0]?.id ?? "";
-					this.set({
-						options: presetOptions(presets),
-						current: this.staged ?? this.currentSession()?.agentPreset ?? this.fallback,
-						error: null
-					});
-				} catch (error) {
-					this.set({ error: messageOf(error) });
+				const roster = await readRoster(this.ctx);
+				if (!roster.ok) {
+					this.set({ error: roster.error });
+					return;
 				}
+				const { presets } = roster.value;
+				this.fallback = presets.find((preset) => preset.isDefault)?.id ?? presets[0]?.id ?? "";
+				const session = this.currentSession();
+				this.set({
+					options: presetOptions(presets),
+					current: this.staged ?? (session === void 0 ? this.fallback : presetOf(session) ?? ""),
+					error: null
+				});
 			}
 			/**
 			* Stage one preset for the next session, applying it immediately when a
 			* blank session is already current.
+			*
+			* The refusal is returned as well as stored, because the two readers need
+			* different things from it: the chip's own label carries the standing state,
+			* while the caller that made this pick is the one that has to say why the
+			* label came back — and only it knows the pick was a person's, not the
+			* applier catching up with a session that just became current.
 			* @param id - the preset to stage.
-			* @returns once the stage settled, and the apply too when one happened.
+			* @returns the refusal text, or undefined once the pick settled.
 			*/
 			async select(id) {
-				if (this.store.getSnapshot().busy) return;
+				if (this.store.getSnapshot().busy) return void 0;
 				this.stage(id);
 				await this.apply();
+				return this.store.getSnapshot().error ?? void 0;
 			}
 			/**
 			* Stage a pick WITHOUT the immediate apply, for a flow that starts the
@@ -1500,8 +1390,13 @@ window.__ModuleLoader__.load({
 			async apply() {
 				const staged = this.staged;
 				const session = this.currentSession();
-				if (staged === void 0 || session === void 0) return;
-				if (!session.blank || session.agentPreset === staged) {
+				if (staged === void 0) {
+					const current = session === void 0 ? this.fallback : presetOf(session) ?? "";
+					if (current !== this.store.getSnapshot().current) this.set({ current });
+					return;
+				}
+				if (session === void 0) return;
+				if (!session.blank || presetOf(session) === staged) {
 					this.staged = void 0;
 					return;
 				}
@@ -1509,65 +1404,58 @@ window.__ModuleLoader__.load({
 					busy: true,
 					error: null
 				});
-				try {
-					const response = await this.api.agentPresets.select({
-						sessionId: session.id,
-						agentPreset: staged
-					});
-					this.staged = void 0;
-					if (!response.result.ok) {
-						this.set({
-							busy: false,
-							error: response.result.error.message,
-							current: this.fallback
-						});
-						return;
-					}
+				const result = await this.ctx.remote.agentPresets.select(session.id, staged);
+				this.staged = void 0;
+				if (!result.ok) {
+					const { error } = result;
 					this.set({
 						busy: false,
-						current: response.result.value.agentPreset
+						error: "reason" in error.details && typeof error.details.reason === "string" ? error.details.reason : error.message,
+						current: presetOf(session) ?? ""
 					});
-					this.onApplied?.(session.id, response.result.value.agentPreset);
-				} catch (error) {
-					this.staged = void 0;
-					this.set({
-						busy: false,
-						error: messageOf(error),
-						current: this.fallback
-					});
+					return;
 				}
+				this.set({
+					busy: false,
+					current: result.value
+				});
 			}
 		};
+		function presetOf(session) {
+			const value = session?.projectionValues?.agentPreset;
+			return typeof value === "string" ? value : void 0;
+		}
 		//#endregion
 		//#region lib/types/client/index.js
 		/**
-		* Agent-preset surface plugin, browser half — four surfaces over one roster:
-		* a General-settings row for the default preset, a chip on the new-session
-		* screen for the session about to start, a read-only label in the session
-		* header, and a settings section that manages the roster (copy, delete,
-		* default, and the way into a preset's own files).
+		* Agent-preset surface plugin, browser half — three surfaces over one roster:
+		* a chip on the new-session screen for the session about to start, a
+		* read-only label in the session header, and a settings section that manages
+		* the roster (copy, delete, default, and the way into a preset's own files).
 		*
 		* A running session keeps the composition it began with (the host refuses to
 		* adopt an existing session under a different preset). That is what splits
-		* the choice from the display: the General row and the hero chip are both
-		* before-the-fact, while the header only reports what a session already runs.
+		* the choice from the display: the hero chip is before-the-fact, while the
+		* header only reports what a session already runs. The default preset is
+		* edited where the roster is visible — the settings section's "make default"
+		* — so General settings carries no duplicate control for the same field.
 		*/
 		/** Required services (cordis fiber inject). */
 		const inject = [
 			"slots",
 			"locale",
-			"connection",
-			"remote"
+			"remote",
+			"remote.agentPresets",
+			"remote.settings"
 		];
 		/**
-		* Mount the General-settings row.
+		* Mount the roster surfaces: hero chip, session-header label, settings section.
 		* @param ctx - the browser plugin context.
 		*/
 		function apply(ctx) {
-			const { api } = ctx.get("connection");
-			const controller = new AgentPresetSettingsController(api);
+			const controller = new AgentPresetSettingsController(ctx);
 			const rosterReaders = /* @__PURE__ */ new Set();
-			const section = new AgentPresetSectionController(api, () => {
+			const section = new AgentPresetSectionController(ctx, () => {
 				controller.load();
 				for (const read of rosterReaders) read();
 			});
@@ -1575,11 +1463,6 @@ window.__ModuleLoader__.load({
 				zh,
 				en
 			}), "ui-agent-preset: settings row dictionaries");
-			const injected = () => ({
-				hooks: { agentPreset: controller.store },
-				load: () => controller.load(),
-				select: (id) => controller.select(id)
-			});
 			ctx.effect(() => {
 				const refresh = () => {
 					controller.load();
@@ -1600,19 +1483,11 @@ window.__ModuleLoader__.load({
 				"slots",
 				"conversation",
 				"sessions",
-				"workspaces"
+				"uiWorkspace"
 			], (scope) => {
-				const api = scope.get("connection").api;
-				const seat = new AgentPresetSeatController(api, () => {
+				const seat = new AgentPresetSeatController(scope, () => {
 					const state = scope.sessions.list.getSnapshot();
-					const summary = state.current === void 0 ? void 0 : state.byId[state.current];
-					return summary === void 0 ? void 0 : {
-						id: summary.id,
-						blank: summary.blank,
-						...summary.agentPreset === void 0 ? {} : { agentPreset: summary.agentPreset }
-					};
-				}, (sessionId, agentPreset) => {
-					scope.sessions.noteAgentPreset(sessionId, agentPreset);
+					return state.current === void 0 ? void 0 : state.byId[state.current];
 				});
 				const seatInjected = () => ({
 					hooks: { agentPresetSeat: seat.store },
@@ -1634,16 +1509,13 @@ window.__ModuleLoader__.load({
 						if (ns !== "agent-presets") return;
 						seat.load();
 					});
-					const presetSelected = scope.remote.$on("agent-preset/selected", (sessionId, agentPreset) => {
-						scope.sessions.noteAgentPreset(sessionId, agentPreset);
-					});
 					const readRoster = () => {
 						seat.load();
 					};
 					rosterReaders.add(readRoster);
 					creatorDraft = () => {
 						seat.stage("cordis", true);
-						scope.workspaces.startSession();
+						scope.uiWorkspace.startSession();
 					};
 					const chip = scope.slots.register({
 						name: "conversation.hero.agentPreset",
@@ -1660,7 +1532,6 @@ window.__ModuleLoader__.load({
 					return () => {
 						stop();
 						settingsMoved();
-						presetSelected();
 						rosterReaders.delete(readRoster);
 						creatorDraft = void 0;
 						chip();
@@ -1696,13 +1567,6 @@ window.__ModuleLoader__.load({
 				remove: () => section.remove(),
 				makeDefault: (id) => section.makeDefault(id)
 			});
-			ctx.slots.inject("settings.general.item", () => ctx.slots.register({
-				name: "settings.general.item",
-				id: "agent-preset",
-				order: -25,
-				locale: "settings.agentPreset",
-				inject: injected
-			}, AgentPresetRow));
 			ctx.slots.inject("settings.section", () => ctx.slots.register({
 				name: "settings.section",
 				id: "agent-presets",
