@@ -4,12 +4,13 @@
 import { spawnSync } from "node:child_process";
 
 const cwd = process.env.USERPROFILE || process.env.HOME || process.cwd();
-const command = process.platform === "win32" ? "dsh" : "dsh";
 const args = ["--profile", "safe", ...process.argv.slice(2)];
-const result = spawnSync(command, args, {
+// On Windows, `dsh` resolves to dsh.cmd: run it without a shell via its full
+// cmd wrapper so task text containing & | ^ % is never interpreted by cmd.exe.
+const result = spawnSync("dsh.cmd", args, {
   cwd,
   stdio: "inherit",
-  shell: process.platform === "win32"
+  shell: false
 });
 
 if (result.error) {

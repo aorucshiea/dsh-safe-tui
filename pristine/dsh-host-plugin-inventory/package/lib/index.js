@@ -97,9 +97,15 @@ let PluginInventoryGateway = (() => {
 		* Read the Loader directly on every call. Cordis's internal plugin/status
 		* events already maintain Entry.fiber and Fiber.state, so a second cache
 		* would only add another lifecycle truth to keep synchronized.
-		* @returns Current non-group Loader entries in Loader order.
+		*
+		* When an agent-preset roster is composed, the snapshot also carries each
+		* preset's composition rows, because those rows — not the Loader's own
+		* entries — are where a deployment that mounts the roster runs its
+		* model-facing plugins.
+		* @returns Current non-group Loader entries in Loader order, with per-preset
+		* compositions when a roster is composed.
 		*/
-		list() {
+		async list() {
 			const entries = [];
 			for (const entry of this.ctx.loader.entries()) {
 				if (entry.options.group) continue;
@@ -110,7 +116,18 @@ let PluginInventoryGateway = (() => {
 					fiberPhase: entry.fiber === void 0 ? null : FIBER_PHASE[entry.fiber.state]
 				});
 			}
-			return { entries };
+			const presets = this.ctx.get("agentPresets");
+			if (presets === void 0) return { entries };
+			return {
+				entries,
+				agentPresets: (await presets.compositionInventory()).map((composition) => ({
+					...composition,
+					rows: composition.rows.map(({ fiberState, ...row }) => ({
+						...row,
+						fiberPhase: fiberState === void 0 ? null : FIBER_PHASE[fiberState]
+					}))
+				}))
+			};
 		}
 	};
 })();

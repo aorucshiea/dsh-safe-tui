@@ -186,78 +186,27 @@ window.__ModuleLoader__.load({
 		* @param props - composed slot props.
 		* @returns the label, or null when the session records no preset.
 		*/
-		// preset-switch-dropdown-v7
-function AgentPresetLabel({ sessionId, useSessions, useAgentPresets, load, t }) {
-  const preset = useSessions((state) => state.byId[sessionId]?.agentPreset);
-  const options = useAgentPresets((state) => state.options);
-  const [enabled, setEnabled] = react.useState(null);
-  react.useEffect(() => {
-    if (preset !== undefined) load();
-  }, [preset, load]);
-  react.useEffect(() => {
-    let alive = true;
-    const loadStatus = () => {
-      fetch("/preset-switch/api/status")
-        .then((r) => r.json())
-        .then((d) => { if (alive) setEnabled(Boolean(d?.enabled)); })
-        .catch(() => { if (alive) setEnabled(true); });
-    };
-    loadStatus();
-    const timer = window.setInterval(loadStatus, 5000);
-    const onFocus = () => loadStatus();
-    window.addEventListener("focus", onFocus);
-    return () => { alive = false; window.clearInterval(timer); window.removeEventListener("focus", onFocus); };
-  }, []);
-  react.useEffect(() => {
-    const id = "preset-switch-dropdown-style";
-    if (document.getElementById(id)) return;
-    const s = document.createElement("style");
-    s.id = id;
-    s.textContent = ".psd-summary{background:rgba(255,255,255,0.04);transition:background .15s}.psd-summary:hover{background:rgba(255,255,255,0.14)!important}.psd-menu-item{transition:background .15s}.psd-menu-item:hover{background:rgba(255,255,255,0.12)!important}";
-    document.head.appendChild(s);
-  }, []);
-  if (preset === undefined || enabled === false) return null;
-  const option = options.find((entry) => entry.id === preset);
-  const text = option === undefined ? undefined : presetDisplayText(option, t);
-  const currentName = text?.name ?? preset;
-  const switchTo = (id) => {
-    fetch("/preset-switch/api/switch", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ sessionId, preset: id })
-    }).then((r) => r.json()).then((r) => {
-      if (r?.ok) location.reload();
-      else alert(r?.error || "切换失败");
-    }).catch((err) => alert("切换失败: " + err));
-  };
-  return react.createElement("details", { style: { position: "relative", display: "inline-block" } },
-    react.createElement("summary", {
-      className: "psd-summary",
-      style: { display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.04)", color: "var(--theme-text, #ddd)", border: "none", cursor: "pointer", font: "inherit", fontSize: 13, padding: "5px 10px", borderRadius: 999, listStyle: "none", outline: "none", transition: "background .15s" }
-    },
-      react.createElement(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, { size: 14, className: AgentPresetLabel_module_css_default.icon, style: { opacity: 0.9 } }),
-      react.createElement("span", null, currentName),
-      react.createElement("svg", { width: 10, height: 6, viewBox: "0 0 10 6", style: { marginLeft: 2, flex: "none", opacity: 0.9 } },
-        react.createElement("path", { d: "M1 1 L5 5 L9 1", stroke: "currentColor", strokeWidth: 1.5, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" })
-      )
-    ),
-    react.createElement("div", { style: { position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 10000, minWidth: 180, maxWidth: 280, background: "var(--theme-bg-layer-2, #242428)", border: "1px solid var(--theme-border, #3a3a3f)", borderRadius: 10, padding: 4, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" } },
-      options.map((entry) => {
-        const entryText = presetDisplayText(entry, t);
-        const active = entry.id === preset;
-        return react.createElement("button", {
-          key: entry.id,
-          className: "psd-menu-item",
-          style: { display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", textAlign: "left", padding: "7px 10px", borderRadius: 7, background: active ? "rgba(74,158,255,0.14)" : "transparent", color: "var(--theme-text, #ddd)", border: "none", cursor: "pointer", font: "inherit", fontSize: 13, gap: 8, transition: "background .15s" },
-          onClick: () => switchTo(entry.id)
-        },
-          react.createElement("span", null, entryText.name ?? entry.id),
-          active ? react.createElement("span", { style: { fontSize: 13, opacity: 0.9 } }, "✓") : null
-        );
-      })
-    )
-  );
-}
+		function AgentPresetLabel({ sessionId, useSessions, useAgentPresets, load, t }) {
+			const preset = useSessions((state) => {
+				const value = state.byId[sessionId]?.projectionValues?.agentPreset;
+				return typeof value === "string" ? value : void 0;
+			});
+			const options = useAgentPresets((state) => state.options);
+			(0, react.useEffect)(() => {
+				if (preset !== void 0) load();
+			}, [preset, load]);
+			if (preset === void 0) return null;
+			const option = options.find((entry) => entry.id === preset);
+			const text = option === void 0 ? void 0 : presetDisplayText(option, t);
+			return (0, react_jsx_runtime.jsxs)("span", {
+				className: AgentPresetLabel_module_css_default.label,
+				title: text?.description ?? t("headerHint"),
+				children: [(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconAgentPresetOutline16, {
+					size: 14,
+					className: AgentPresetLabel_module_css_default.icon
+				}), text?.name ?? preset]
+			});
+		}
 		//#endregion
 		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-agent-preset/src/client/AgentPresetSeat.module.css.mjs
 		const css$1 = ".cubgiG_menuAnchor{min-width:54px;max-width:100%}.cubgiG_seat{min-width:0;max-width:min(100%,240px);min-height:28px;color:var(--dsw-alias-label-primary);white-space:nowrap;cursor:pointer;background:0 0;border:none;border-radius:16px;align-items:center;gap:4px;padding:0 8px;font-size:13px;font-weight:500;line-height:20px;display:inline-flex}.cubgiG_seat:not(:disabled):hover,.cubgiG_seat[aria-expanded=true]{background:var(--dsw-alias-interactive-bg-hover)}.cubgiG_seat:disabled{cursor:default;color:var(--dsw-alias-label-quaternary)}.cubgiG_seatIcon{color:var(--dsw-alias-label-primary);flex:none}.cubgiG_seatLabel{text-overflow:ellipsis;white-space:nowrap;min-width:0;overflow:hidden}.cubgiG_introIcon{animation:.15s cubic-bezier(.16,1,.3,1) both cubgiG_seat-icon-in}@keyframes cubgiG_seat-icon-in{0%{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}.cubgiG_introText{white-space:pre;display:inline-block}.cubgiG_introChar{white-space:pre;opacity:0;animation:.4s ease-out forwards cubgiG_seat-char-in;display:inline-block}@keyframes cubgiG_seat-char-in{0%{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.cubgiG_introIcon,.cubgiG_introChar{opacity:1;animation:none}}.cubgiG_chevron{color:var(--dsw-alias-label-caption);flex:none}.cubgiG_item{flex-direction:column;gap:2px;max-width:280px;display:flex}.cubgiG_itemName{color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}.cubgiG_itemDesc{color:var(--dsw-alias-label-caption);white-space:normal;font-size:12px;line-height:16px}";
