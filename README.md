@@ -1,3 +1,4 @@
+仍处于开发阶段，存在bug，下载后，请自行承担风险。
 # dsh-safe-tui
 
 [English](README.en.md)
