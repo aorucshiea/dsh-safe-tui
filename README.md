@@ -32,7 +32,7 @@ DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控
 - 当 Web 对话因插件错误无法加载时，左侧栏仍可用，可直接切到“控制台”继续操作 DSH。
 - Safe TUI 会自动修复因强制中断产生的会话日志 seq 重复问题，恢复后可直接继续历史会话。
 
-### 同会话穿梭（v0.6.0）
+### 同会话穿梭（v0.7.0）
 
 控制台默认**继续当前 Web 会话**：打开右侧“控制台”面板时会自动附上当前 `sessionId`，后端以 `dsh --profile safe --resume <sessionId>` 启动 Safe TUI，因此 Web 和 TUI 看到的是同一条对话。
 
@@ -40,10 +40,21 @@ DeepSeek Harness 安全模式 / 修复模式，并可在 DSH Web 中作为“控
 - AI 可以通过工具自助穿梭/配置：
   - `console_status` — 查看当前 session / model / preset / cwd；
   - `console_set_model` — 切换当前对话模型（Web 侧立即生效，Safe TUI 侧下一步生效并保存默认）；
-  - `console_set_preset` — 切换当前对话预设（Web 侧仅空白会话允许，TUI 侧带历史警告）；
+  - `console_set_preset` — 切换当前对话预设（Web/TUI 均可带历史警告切换，并同步默认预设）；
   - `console_handoff` — 把当前 Web 会话移交给右侧“控制台”面板（自动打开面板并 resume 同一 session）；
   - `console_return` — 从 Safe TUI 请求关闭控制台并回到 Web 对话。
 - 控制台面板可关闭；断线后会自动重连。
+- 极简 preset 会额外加 agent 级工具掩码，只暴露 `pwsh`/`bash` 与 `str_replace_editor`，与官方极简模式一致。
+
+### 会话独占锁
+
+Web 与 Safe TUI 是不同进程，而 DSH 的持久化写锁只在单进程内生效。为避免同一会话被两边同时写入导致日志 seq 损坏，本插件在 `~/.dsh/safe-tui/leases/` 维护跨进程租约：
+
+- Web agent 创建时自动持有 `web` 租约，agent 销毁或 handoff 时释放；
+- Safe TUI resume / 发消息前持有 `console` 租约；Web 未释放时会显示等待提示；
+- 进程崩溃后租约通过 PID 存活检查与 heartbeat 超时自动回收。
+
+因此同一会话同一时间只有一个写入方。若控制台一直等待，请让 Web 侧执行 `console_handoff` 或关闭占用该会话的 Web agent。
 
 ## 使用
 
@@ -92,7 +103,7 @@ node "%USERPROFILE%\dsh-safe-tui\lib\repair.js" --repair
 
 ```bash
 # 从 GitHub 安装并初始化 safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.16
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.7.0
 ```
 
 之后可以直接运行：

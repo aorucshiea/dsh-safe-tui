@@ -22,7 +22,7 @@ When the main Web UI cannot start because of a broken plugin/client patch, use t
 
 ```bash
 # Install the plugin into a fresh safe profile
-dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.4.16
+dsh plugin --profile safe add github:aorucshiea/dsh-safe-tui#v0.7.0
 ```
 
 Then either:
@@ -77,6 +77,19 @@ Official system presets:
 - When the input is empty, `↑` / `↓` or `PgUp` / `PgDn` scroll through conversation history; while typing, `↑` / `↓` recall command history.
 - Model reasoning and tool calls are collapsed to one line by default; press `Ctrl+O` to expand/collapse details. The mouse wheel can also scroll history.
 - You can switch `preset` inside an existing session; a warning is shown because old tool calls may not match the new preset.
+
+## Web Console
+
+When the Web profile loads this bundle, the conversation keeps a **Console** tab. Clicking it opens the Safe TUI in the built-in right details column (it pushes the chat instead of overlaying it) and resumes the same session.
+
+- The detached `console-bridge` process owns the PTY and survives Web server restarts.
+- The browser reconnects to the current TUI screen (only the final screen frame is replayed).
+- AI tools: `console_status`, `console_set_model`, `console_set_preset`, `console_handoff`, `console_return`.
+- The official `minimal` preset is enforced with an agent-scoped tool mask: only `pwsh`/`bash` and `str_replace_editor` are visible.
+
+### Session lease
+
+DSH persistence only enforces one writer inside a single process. To prevent the Web host and the detached Safe TUI from writing the same session concurrently, this plugin keeps cross-process leases under `~/.dsh/safe-tui/leases/`. A Web agent holds a `web` lease; the Safe TUI holds a `console` lease while resuming or sending a turn. Stale leases are reclaimed by PID liveness and heartbeat timeout.
 
 ## Other CLI usage
 
